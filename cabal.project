@@ -1,0 +1,16 @@
+packages: language-plutus-core
+          plutus-core-interpreter
+          plutus-exe
+          core-to-plc
+optimization: 2
+constraints: language-plutus-core +development
+tests: true
+benchmarks: true
+documentation: true
+
+allow-newer:
+    cborg:containers
+
+program-options
+  alex-options: -g
+  happy-options: -gcsa
