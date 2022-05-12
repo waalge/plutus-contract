@@ -1,18 +1,20 @@
 cabal-version: 3.0
-name: plutus-ledger-constraints
+name: plutus-script-utils
 version: 0.1.0.0
 license: Apache-2.0
 license-files:
   LICENSE
   NOTICE
-maintainer: sjoerd.visscher@iohk.io
-author: Michael Peyton Jones, Jann Mueller
-synopsis: Ledger Constraints
+maintainer: konstantinos.lambrou@iohk.io
+author: Konstantinos Lambrou-Latreille
+homepage: https://github.com/input-output-hk/plutus-apps#readme
+bug-reports: https://github.com/input-output-hk/plutus-apps/issues
+synopsis: Helper/utility functions for writing Plutus scripts.
 description:
-    Plutus transaction constraints library
+    Helper/utility functions for writing Plutus scripts.
 category: Language
 build-type: Simple
-extra-doc-files: README.md
+extra-doc-files: README.adoc
 
 source-repository head
     type: git
@@ -31,31 +33,42 @@ common lang
                  -- See Plutus Tx readme
                  -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
 
+flag defer-plugin-errors
+    description:
+        Defer errors from the plugin, useful for things like Haddock that can't handle it.
+    default: False
+    manual: True
+
 library
     import: lang
     hs-source-dirs: src
     default-language: Haskell2010
     exposed-modules:
-        Ledger.Constraints
-        Ledger.Constraints.OffChain
-        Ledger.Constraints.OnChain
-        Ledger.Constraints.TxConstraints
+        Plutus.Script.Utils.V1.Generators
+        Plutus.Script.Utils.V1.Scripts
+        Plutus.Script.Utils.V1.Typed.Scripts
+        Plutus.Script.Utils.V1.Typed.Scripts.MonetaryPolicies
+        Plutus.Script.Utils.V1.Typed.Scripts.StakeValidators
+        Plutus.Script.Utils.V1.Typed.Scripts.Validators
 
     build-depends:
         base >=4.9 && <5,
-        aeson -any,
-        containers -any,
-        lens -any,
-        mtl -any,
-        openapi3 -any,
-        prettyprinter -any,
-        plutus-ledger -any,
+        cardano-api >=1.34,
+        cardano-ledger-alonzo -any,
+        bytestring -any,
+        plutus-core -any,
         plutus-ledger-api -any,
-        plutus-script-utils -any,
         plutus-tx -any,
-        transformers -any,
+        plutus-tx-plugin -any,
+        serialise -any,
 
-test-suite plutus-ledger-constraints-test
+    ghc-options: -fprint-potential-instances
+
+    if flag(defer-plugin-errors)
+        ghc-options: -fplugin-opt PlutusTx.Plugin:defer-errors
+
+test-suite plutus-ledger-test
+    import: lang
     type: exitcode-stdio-1.0
     main-is: Spec.hs
     hs-source-dirs: test
@@ -63,18 +76,4 @@ test-suite plutus-ledger-constraints-test
     default-extensions: ImportQualifiedPost
     build-depends:
         base >=4.9 && <5,
-        bytestring -any,
-        containers -any,
-        data-default -any,
-        hedgehog -any,
-        lens -any,
-        mtl -any,
-        plutus-ledger -any,
-        plutus-ledger-api -any,
-        plutus-ledger-constraints -any,
-        plutus-script-utils -any,
-        plutus-tx -any,
-        plutus-tx-plugin -any,
         tasty -any,
-        tasty-hedgehog -any,
-        template-haskell -any,
