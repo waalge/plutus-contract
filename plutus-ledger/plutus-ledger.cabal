@@ -100,8 +100,14 @@ library
     Plutus.V1.Ledger.Credential as Ledger.Credential,
     Plutus.V1.Ledger.DCert as Ledger.DCert,
     Plutus.V1.Ledger.Interval as Ledger.Interval,
+    Plutus.V1.Ledger.Scripts as Ledger.Scripts,
     Plutus.V1.Ledger.Time as Ledger.Time,
 
+  --Data.Aeson.Extras,
+  --Data.Either.Extras,
+  --Plutus.V1.Ledger.Ada as Ledger.Ada,
+  --Plutus.V1.Ledger.Slot as Ledger.Slot,
+  --Plutus.V1.Ledger.TxId as Ledger.TxId,
   -- The rest of the plutus-ledger-api modules are reexported from within
   -- the Haskell modules and not in the current cabal file.
   -- For example: Plutus.V1.Ledger.Address is reexported by Ledger.Address
@@ -112,15 +118,15 @@ library
   --------------------
   -- Local components
   --------------------
-  build-depends:
-    , freer-extras         >=1.0.0
-    , plutus-script-utils  >=1.0.0
+  build-depends:      plutus-script-utils >=1.0.0
 
+  -- FIXME: add back after externalization
+  -- , freer-extras         >=1.0.0
   --------------------------
   -- Other IOG dependencies
   --------------------------
   build-depends:
-    , cardano-api:{cardano-api, gen}  >=1.35
+    , cardano-api                  >=1.35
     , cardano-crypto
     , cardano-crypto-class
     , cardano-ledger-alonzo
@@ -133,9 +139,9 @@ library
     , iohk-monitoring
     , ouroboros-consensus
     , ouroboros-consensus-shelley
-    , plutus-core                     >=1.0.0
-    , plutus-ledger-api               >=1.0.0
-    , plutus-tx                       >=1.0.0
+    , plutus-core                  >=1.0.0
+    , plutus-ledger-api            >=1.0.0
+    , plutus-tx                    >=1.0.0
 
   ------------------------
   -- Non-IOG dependencies
@@ -200,10 +206,10 @@ test-suite plutus-ledger-test
   -- Other IOG dependencies
   --------------------------
   build-depends:
-    , cardano-api:{cardano-api, gen}  >=1.35
-    , cardano-crypto-class            >=2.0.0
-    , plutus-ledger-api               >=1.0.0
-    , plutus-tx                       >=1.0.0
+    , cardano-api           >=1.35
+    , cardano-crypto-class  >=2.0.0
+    , plutus-ledger-api     >=1.0.0
+    , plutus-tx             >=1.0.0
 
   ------------------------
   -- Non-IOG dependencies

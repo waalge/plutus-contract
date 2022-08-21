@@ -1,3 +1,4 @@
+--FIXME can go module the reexported types that don't go.
 {-# LANGUAGE ConstraintKinds    #-}
 {-# LANGUAGE ExplicitNamespaces #-}
 {-# LANGUAGE FlexibleContexts   #-}
@@ -108,19 +109,20 @@ module Plutus.Contract(
     , type Empty
     ) where
 
-import Data.Row (Empty, HasType, type (.\/))
+import           Data.Row                   (Empty, HasType, type (.\/))
 
-import Plutus.Contract.Logging as Logging
-import Plutus.Contract.Request (ContractRow)
-import Plutus.Contract.Request qualified as Request
-import Plutus.Contract.Schema qualified as Schema
-import Plutus.Contract.Types (Contract (Contract), Promise, select)
-import Plutus.Contract.Types qualified
+import           Plutus.Contract.Logging    as Logging
+import           Plutus.Contract.Request    (ContractRow)
+import qualified Plutus.Contract.Request    as Request
+import qualified Plutus.Contract.Schema     as Schema
+import           Plutus.Contract.Types      (Contract (Contract), Promise,
+                                             select)
+import qualified Plutus.Contract.Types
 
-import Control.Monad.Freer.Writer qualified as W
-import Data.Functor.Apply (liftF2)
-import Wallet.API (WalletAPIError)
-import Wallet.Types qualified
+import qualified Control.Monad.Freer.Writer as W
+import           Data.Functor.Apply         (liftF2)
+import           Wallet.API                 (WalletAPIError)
+import qualified Wallet.Types
 
 -- | Execute both contracts in any order
 both :: Promise w s e a -> Promise w s e b -> Promise w s e (a, b)

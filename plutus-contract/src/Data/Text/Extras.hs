@@ -1,3 +1,4 @@
+--FIXME: move to different module
 {-# LANGUAGE OverloadedStrings #-}
 
 module Data.Text.Extras(
@@ -5,7 +6,7 @@ module Data.Text.Extras(
     , tshow
     ) where
 
-import Data.Text qualified as T
+import qualified Data.Text as T
 
 tshow :: Show a => a -> T.Text
 tshow = T.pack . show

@@ -61,41 +61,12 @@ library
     Plutus.Contract.Constraints
     Plutus.Contract.Effects
     Plutus.Contract.Error
-    Plutus.Contract.Logging
-    Plutus.Contract.Oracle
     Plutus.Contract.Request
     Plutus.Contract.Resumable
     Plutus.Contract.Schema
     Plutus.Contract.Secrets
-    Plutus.Contract.State
-    Plutus.Contract.StateMachine
-    Plutus.Contract.StateMachine.MintingPolarity
-    Plutus.Contract.StateMachine.OnChain
-    Plutus.Contract.StateMachine.ThreadToken
-    Plutus.Contract.Trace
-    Plutus.Contract.Trace.RequestHandler
     Plutus.Contract.Types
-    Plutus.Contract.Util
-    Plutus.Contract.Wallet
-    Plutus.Trace
-    Plutus.Trace.Effects.Assert
-    Plutus.Trace.Effects.ContractInstanceId
-    Plutus.Trace.Effects.EmulatedWalletAPI
-    Plutus.Trace.Effects.EmulatorControl
-    Plutus.Trace.Effects.RunContract
-    Plutus.Trace.Effects.RunContractPlayground
-    Plutus.Trace.Effects.Waiting
-    Plutus.Trace.Emulator
-    Plutus.Trace.Emulator.ContractInstance
-    Plutus.Trace.Emulator.Extract
-    Plutus.Trace.Emulator.System
-    Plutus.Trace.Emulator.Types
-    Plutus.Trace.Playground
-    Plutus.Trace.Scheduler
-    Plutus.Trace.Tag
     Wallet
-    Wallet.API
-    Wallet.Effects
     Wallet.Emulator
     Wallet.Emulator.Chain
     Wallet.Emulator.Error
@@ -107,10 +78,6 @@ library
     Wallet.Emulator.Types
     Wallet.Emulator.Wallet
     Wallet.Error
-    Wallet.Graph
-    Wallet.Rollup
-    Wallet.Rollup.Render
-    Wallet.Rollup.Types
     Wallet.Types
 
   hs-source-dirs:  src
@@ -119,27 +86,30 @@ library
   -- Local components
   --------------------
   build-depends:
-    , freer-extras               >=1.0.0
-    , plutus-chain-index-core    >=1.0.0
-    , plutus-ledger              >=1.0.0
-    , plutus-ledger-constraints  >=1.0.0
-    , plutus-script-utils        >=1.0.0
+    , plutus-ledger
+    , plutus-ledger-constraints
+    , plutus-script-utils
 
+  -- , freer-extras
+  -- , plutus-chain-index-core
   --------------------------
   -- Other IOG dependencies
   --------------------------
   build-depends:
-    , cardano-api          >=1.35
-    , cardano-crypto
-    , cardano-ledger-core
-    , cardano-wallet-core
-    , plutus-core          >=1.0.0
-    , plutus-ledger-api    >=1.0.0
-    , plutus-tx            >=1.0.0
-    , quickcheck-dynamic
+    , plutus-core
+    , plutus-ledger-api
 
-  if !(impl(ghcjs) || os(ghcjs))
-    build-depends: plutus-tx-plugin >=1.0.0
+  -- , cardano-api
+  -- , cardano-crypto
+  -- , cardano-ledger-core
+  -- , cardano-wallet-core
+  -- FIXME: probably needed
+  -- yeet dep
+  -- , plutus-tx
+  -- , quickcheck-dynamic
+
+  --if !(impl(ghcjs) || os(ghcjs))
+  --  build-depends: plutus-tx-plugin
 
   ------------------------
   -- Non-IOG dependencies
@@ -179,32 +149,14 @@ library
     , streaming
     , template-haskell
     , text
-    , text-class
     , transformers
     , uniplate
     , unordered-containers
     , uuid
 
+  -- , text-class
   if flag(defer-plugin-errors)
-    ghc-options: -fplugin-opt PlutusTx.Plugin:defer-errors
-
-  if !((impl(ghcjs) || os(ghcjs)) || os(windows))
-    exposed-modules:
-      Plutus.Contract.Test
-      Plutus.Contract.Test.ContractModel
-      Plutus.Contract.Test.ContractModel.CrashTolerance
-      Plutus.Contract.Test.ContractModel.DoubleSatisfaction
-      Plutus.Contract.Test.ContractModel.Internal
-      Plutus.Contract.Test.ContractModel.Symbolics
-      Plutus.Contract.Test.Coverage
-      Plutus.Contract.Test.Coverage.Analysis
-      Plutus.Contract.Test.Coverage.Analysis.Common
-      Plutus.Contract.Test.Coverage.Analysis.DeBruijn
-      Plutus.Contract.Test.Coverage.Analysis.Interpreter
-      Plutus.Contract.Test.Coverage.Analysis.Pretty
-      Plutus.Contract.Test.Coverage.Analysis.Types
-      Plutus.Contract.Test.Coverage.ReportCoverage
-      Plutus.Contract.Test.MissingLovelace
+    ghc-options:   -fplugin-opt PlutusTx.Plugin:defer-errors
 
     ------------------------
     -- Non-IOG dependencies
@@ -213,92 +165,3 @@ library
       , tasty
       , tasty-golden
       , tasty-hunit
-
-test-suite plutus-contract-test
-  -- TODO: put this back, turns out there were lots of warnings in the `plutus-emulator` tests...
-  --import: lang
-  default-language:   Haskell2010
-  default-extensions: ImportQualifiedPost
-  type:               exitcode-stdio-1.0
-  main-is:            Spec.hs
-
-  -- See Plutus Tx readme for why we need the following flags:
-  -- -fobject-code -fno-ignore-interface-pragmas and -fno-omit-interface-pragmas
-  ghc-options:
-    -Wall -Wnoncanonical-monad-instances -Wincomplete-uni-patterns
-    -Wincomplete-record-updates -Wredundant-constraints -Widentities
-    -rtsopts -fobject-code -fno-ignore-interface-pragmas
-    -fno-omit-interface-pragmas
-
-  hs-source-dirs:     test
-  other-modules:
-    Spec.Balancing
-    Spec.Contract
-    Spec.Contract.TxConstraints
-    Spec.Emulator
-    Spec.ErrorChecking
-    Spec.Plutus.Contract.Oracle
-    Spec.Plutus.Contract.Wallet
-    Spec.Rows
-    Spec.Secrets
-    Spec.State
-    Spec.ThreadToken
-    Spec.TxConstraints.MustSpendAtLeast
-    Spec.TxConstraints.RequiredSigner
-    Spec.TxConstraints.TimeValidity
-
-  --------------------
-  -- Local components
-  --------------------
-  build-depends:
-    , freer-extras               >=1.0.0
-    , plutus-chain-index-core    >=1.0.0
-    , plutus-contract            >=1.0.0
-    , plutus-ledger              >=1.0.0
-    , plutus-ledger-constraints  >=1.0.0
-    , plutus-script-utils        >=1.0.0
-    , plutus-tx-constraints      >=1.0.0
-
-  --------------------------
-  -- Other IOG dependencies
-  --------------------------
-  build-depends:
-    , cardano-api:{cardano-api, gen}  >=1.35
-    , plutus-core                     >=1.0.0
-    , plutus-ledger-api               >=1.0.0
-    , plutus-tx                       >=1.0.0
-
-  if !(impl(ghcjs) || os(ghcjs))
-    build-depends: plutus-tx-plugin >=1.0.0
-
-  ------------------------
-  -- Non-IOG dependencies
-  ------------------------
-  build-depends:
-    , aeson
-    , base                >=4.9 && <5
-    , bytestring
-    , containers
-    , data-default
-    , deepseq
-    , extensible-effects
-    , freer-simple
-    , hedgehog
-    , lens
-    , mtl
-    , pretty
-    , prettyprinter
-    , QuickCheck
-    , row-types
-    , semigroupoids
-    , serialise
-    , splitmix
-    , stm
-    , tasty
-    , tasty-golden
-    , tasty-hedgehog
-    , tasty-hunit
-    , tasty-quickcheck
-    , text
-    , transformers
-    , utf8-string

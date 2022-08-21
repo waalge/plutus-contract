@@ -1,3 +1,4 @@
+--FIXME; similarly to CheckPoint; move this out to freer-extra
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE DeriveAnyClass      #-}
@@ -76,21 +77,22 @@ module Plutus.Contract.Resumable(
     , ReqMap(..)
     ) where
 
-import Control.Applicative
-import Control.Lens (Iso', iso)
-import Data.Aeson (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
-import Data.Map (Map)
-import Data.Map qualified as Map
-import Data.OpenApi.Schema qualified as OpenApi
-import Data.Semigroup (Max (..))
-import GHC.Generics (Generic)
-import Numeric.Natural (Natural)
-import Prettyprinter
+import           Control.Applicative
+import           Control.Lens                  (Iso', iso)
+import           Data.Aeson                    (FromJSON, FromJSONKey, ToJSON,
+                                                ToJSONKey)
+import           Data.Map                      (Map)
+import qualified Data.Map                      as Map
+import qualified Data.OpenApi.Schema           as OpenApi
+import           Data.Semigroup                (Max (..))
+import           GHC.Generics                  (Generic)
+import           Numeric.Natural               (Natural)
+import           Prettyprinter
 
-import Control.Monad.Freer
-import Control.Monad.Freer.Coroutine
-import Control.Monad.Freer.NonDet
-import Control.Monad.Freer.State
+import           Control.Monad.Freer
+import           Control.Monad.Freer.Coroutine
+import           Control.Monad.Freer.NonDet
+import           Control.Monad.Freer.State
 
 {- Note [Resumable state machine]
 
@@ -124,6 +126,7 @@ data Resumable i o r where
 prompt :: Member (Resumable i o) effs => o -> Eff effs i
 prompt o = send (RRequest o)
 
+    Plutus.Contract.Oracle
 select ::
     forall i o effs a.
     Member (Resumable i o) effs

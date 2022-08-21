@@ -1,3 +1,4 @@
+--TODO: Don't know about this one
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleContexts   #-}
@@ -6,17 +7,18 @@
 {-# LANGUAGE OverloadedStrings  #-}
 module Wallet.Emulator.Error where
 
-import Control.Monad.Freer (Eff, Member)
-import Control.Monad.Freer.Error (Error, throwError)
-import Data.Aeson (FromJSON, ToJSON)
-import Data.Text (Text)
-import GHC.Generics (Generic)
-import Prettyprinter (Pretty (pretty), viaShow, (<+>))
+import           Control.Monad.Freer       (Eff, Member)
+import           Control.Monad.Freer.Error (Error, throwError)
+import           Data.Aeson                (FromJSON, ToJSON)
+import           Data.Text                 (Text)
+import           GHC.Generics              (Generic)
+import           Prettyprinter             (Pretty (pretty), viaShow, (<+>))
 
-import Ledger (PaymentPubKeyHash, ValidationError, Value)
-import Ledger.Ada (Ada)
-import Ledger.Constraints qualified as Constraints
-import Ledger.Tx.CardanoAPI (ToCardanoError)
+import           Ledger                    (PaymentPubKeyHash, ValidationError,
+                                            Value)
+import           Ledger.Ada                (Ada)
+import qualified Ledger.Constraints        as Constraints
+import           Ledger.Tx.CardanoAPI      (ToCardanoError)
 
 -- | An error thrown by wallet interactions.
 data WalletAPIError =

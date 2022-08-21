@@ -1,3 +1,4 @@
+-- TODO can go completely
 {-# LANGUAGE DeriveAnyClass    #-}
 {-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE NamedFieldPuns    #-}
@@ -16,20 +17,20 @@ module Wallet.Graph
   , UtxoLocation
   ) where
 
-import Data.Aeson.Types (ToJSON, toJSON)
-import Data.List (nub)
-import Data.Map qualified as Map
-import Data.Maybe (catMaybes)
-import Data.Set qualified as Set
-import Data.Text qualified as Text
-import GHC.Generics (Generic)
+import           Data.Aeson.Types  (ToJSON, toJSON)
+import           Data.List         (nub)
+import qualified Data.Map          as Map
+import           Data.Maybe        (catMaybes)
+import qualified Data.Set          as Set
+import qualified Data.Text         as Text
+import           GHC.Generics      (Generic)
 
-import Ledger.Ada qualified as Ada
-import Ledger.Address
-import Ledger.Blockchain
-import Ledger.Credential (Credential (..))
-import Ledger.Crypto
-import Ledger.Tx
+import qualified Ledger.Ada        as Ada
+import           Ledger.Address
+import           Ledger.Blockchain
+import           Ledger.Credential (Credential (..))
+import           Ledger.Crypto
+import           Ledger.Tx
 
 -- | The owner of an unspent transaction output.
 data UtxOwner

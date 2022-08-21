@@ -1,3 +1,4 @@
+-- FIXME: This can probably go completely
 {-# LANGUAGE DataKinds            #-}
 {-# LANGUAGE DeriveAnyClass       #-}
 {-# LANGUAGE DeriveGeneric        #-}
@@ -21,17 +22,18 @@ module Plutus.Contract.State(
     , mkResponse
     ) where
 
-import Control.Monad.Freer.Extras.Log (LogMessage)
-import Data.Aeson (FromJSON, ToJSON, Value)
-import Data.Bifunctor (Bifunctor (..))
-import Data.Foldable (toList)
-import GHC.Generics (Generic)
+import           Control.Monad.Freer.Extras.Log (LogMessage)
+import           Data.Aeson                     (FromJSON, ToJSON, Value)
+import           Data.Bifunctor                 (Bifunctor (..))
+import           Data.Foldable                  (toList)
+import           GHC.Generics                   (Generic)
 
-import Plutus.Contract.Checkpoint (CheckpointKey, CheckpointStore)
-import Plutus.Contract.Effects (PABReq, PABResp)
-import Plutus.Contract.Resumable
-import Plutus.Contract.Types hiding (lastLogs, lastState, logs, observableState)
-import Prettyprinter.Extras (Pretty, PrettyShow (..))
+import           Plutus.Contract.Checkpoint     (CheckpointKey, CheckpointStore)
+import           Plutus.Contract.Effects        (PABReq, PABResp)
+import           Plutus.Contract.Resumable
+import           Plutus.Contract.Types          hiding (lastLogs, lastState,
+                                                 logs, observableState)
+import           Prettyprinter.Extras           (Pretty, PrettyShow (..))
 
 -- $contractstate
 -- Types for initialising and running instances of 'Contract's. The types and
@@ -94,11 +96,15 @@ instance Bifunctor (ContractResponse w e) where
     bimap f g c@ContractResponse{newState} =
         fmap g c{ newState = fmap (fmap f) newState }
 
+-- TODO: do we need this here?
 mapE :: forall e f w s h. (e -> f) -> ContractResponse w e s h -> ContractResponse w f s h
 mapE f c@ContractResponse{err} = c{err = fmap f err}
 
 mapW :: forall w q e s h. (w -> q) -> ContractResponse w e s h -> ContractResponse q e s h
 mapW f c@ContractResponse{lastState, newState} = c{lastState = f lastState, newState = first f newState}
+
+-- TODO: what about this and the following function?
+-- they probably have to go since they rely on
 
 -- | Run one step of the contract by restoring it to its previous state and
 --   feeding it a single new 'Response' event.
@@ -129,6 +135,7 @@ mkResponse oldW ResumableResult{_responses, _requests=Requests{unRequests},_chec
         , lastState
         }
 
+-- TODO: relies on interpretation but this seems to be more generic and not specific to Plutus so maybe it's ok?
 -- | The 'ContractResponse' with the initial state of the contract.
 initialiseContract ::
     forall w s e a.

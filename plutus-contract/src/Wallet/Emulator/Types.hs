@@ -1,3 +1,4 @@
+--FIXME: this can go module reexports that didn't go
 {-# LANGUAGE AllowAmbiguousTypes   #-}
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE DataKinds             #-}
@@ -65,48 +66,23 @@ module Wallet.Emulator.Types(
     Wallet.Emulator.Wallet.selectCoin
     ) where
 
-import Cardano.Crypto.Wallet qualified as Crypto
-import Control.Lens hiding (index)
-import Control.Monad.Freer (Eff, Member, interpret, reinterpret2, type (~>))
-import Control.Monad.Freer.Error (Error)
-import Control.Monad.Freer.Extras qualified as Eff
-import Control.Monad.Freer.Extras.Log (LogMsg, mapLog)
-import Control.Monad.Freer.State (State)
+import qualified Cardano.Crypto.Wallet      as Crypto
+import           Control.Lens               hiding (index)
 
-import Ledger (Params, addSignature)
-import Plutus.ChainIndex (ChainIndexError)
-import Wallet.API (WalletAPIError)
+import           Plutus.ChainIndex          (ChainIndexError)
+import           Wallet.API                 (WalletAPIError)
 
-import Ledger.CardanoWallet qualified
-import Plutus.Contract.Error (AssertionError)
-import Plutus.Contract.Error qualified
-import Wallet.Emulator.Chain (ChainControlEffect, ChainEffect, ChainEvent, ChainState, handleChain, handleControlChain)
-import Wallet.Emulator.Chain qualified
-import Wallet.Emulator.MultiAgent (EmulatorEvent', EmulatorState, MultiAgentControlEffect, MultiAgentEffect, chainEvent,
-                                   chainState, handleMultiAgent, handleMultiAgentControl)
-import Wallet.Emulator.MultiAgent qualified
-import Wallet.Emulator.NodeClient qualified
-import Wallet.Emulator.Wallet qualified
-
-type EmulatorEffs = '[MultiAgentEffect, ChainEffect, ChainControlEffect]
-
-processEmulated :: forall effs.
-    ( Member (Error WalletAPIError) effs
-    , Member (Error ChainIndexError) effs
-    , Member (Error AssertionError) effs
-    , Member (State EmulatorState) effs
-    , Member (LogMsg EmulatorEvent') effs
-    )
-    => Params
-    -> Eff (MultiAgentEffect ': MultiAgentControlEffect ': ChainEffect ': ChainControlEffect ': effs)
-    ~> Eff effs
-processEmulated params act =
-    act
-        & handleMultiAgent
-        & handleMultiAgentControl
-        & reinterpret2 @ChainEffect @(State ChainState) @(LogMsg ChainEvent) (handleChain params)
-        & interpret (Eff.handleZoomedState chainState)
-        & interpret (mapLog (review chainEvent))
-        & reinterpret2 @ChainControlEffect @(State ChainState) @(LogMsg ChainEvent) (handleControlChain params)
-        & interpret (Eff.handleZoomedState chainState)
-        & interpret (mapLog (review chainEvent))
+import qualified Ledger.CardanoWallet
+import           Plutus.Contract.Error      (AssertionError)
+import qualified Plutus.Contract.Error
+import qualified Wallet.Emulator.Chain
+import           Wallet.Emulator.Chain      (ChainControlEffect, ChainEffect,
+                                             ChainEvent, ChainState)
+import qualified Wallet.Emulator.MultiAgent
+import           Wallet.Emulator.MultiAgent (EmulatorEvent', EmulatorState,
+                                             MultiAgentControlEffect,
+                                             MultiAgentEffect, chainEvent,
+                                             chainState, handleMultiAgent,
+                                             handleMultiAgentControl)
+import qualified Wallet.Emulator.NodeClient
+import qualified Wallet.Emulator.Wallet

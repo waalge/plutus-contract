@@ -1,3 +1,4 @@
+--FIXME: remove interpretation
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE DeriveAnyClass        #-}
@@ -17,38 +18,52 @@
 {-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 module Wallet.Emulator.MultiAgent where
 
-import Control.Lens (AReview, Getter, Lens', Prism', anon, at, folded, makeLenses, prism', reversed, review, to, unto,
-                     view, (&), (.~), (^.), (^..))
-import Control.Monad (join)
-import Control.Monad.Freer (Eff, Member, Members, interpret, send, subsume, type (~>))
-import Control.Monad.Freer.Error (Error, throwError)
-import Control.Monad.Freer.Extras.Log (LogMessage, LogMsg, LogObserve, handleObserveLog, mapLog)
-import Control.Monad.Freer.Extras.Modify (handleZoomedState, raiseEnd, writeIntoState)
-import Control.Monad.Freer.State (State, get)
-import Data.Aeson (FromJSON, ToJSON)
-import Data.Map (Map)
-import Data.Map qualified as Map
-import Data.Maybe (fromMaybe)
-import Data.Text qualified as T
-import Data.Text.Extras (tshow)
-import GHC.Generics (Generic)
-import Prettyprinter (Pretty (pretty), colon, (<+>))
+import           Control.Lens                      (AReview, Getter, Lens',
+                                                    Prism', anon, at, folded,
+                                                    makeLenses, prism',
+                                                    reversed, review, to, unto,
+                                                    view, (&), (.~), (^.),
+                                                    (^..))
+import           Control.Monad                     (join)
+import           Control.Monad.Freer               (Eff, Member, Members,
+                                                    interpret, send, subsume,
+                                                    type (~>))
+import           Control.Monad.Freer.Error         (Error, throwError)
+import           Control.Monad.Freer.Extras.Log    (LogMessage, LogMsg,
+                                                    LogObserve,
+                                                    handleObserveLog, mapLog)
+import           Control.Monad.Freer.Extras.Modify (handleZoomedState, raiseEnd,
+                                                    writeIntoState)
+import           Control.Monad.Freer.State         (State, get)
+import           Data.Aeson                        (FromJSON, ToJSON)
+import           Data.Map                          (Map)
+import qualified Data.Map                          as Map
+import           Data.Maybe                        (fromMaybe)
+import qualified Data.Text                         as T
+import           Data.Text.Extras                  (tshow)
+import           GHC.Generics                      (Generic)
+import           Prettyprinter                     (Pretty (pretty), colon,
+                                                    (<+>))
 
-import Ledger hiding (to, value)
-import Ledger.Ada qualified as Ada
-import Ledger.AddressMap qualified as AM
-import Ledger.Index qualified as Index
-import Ledger.Value qualified as Value
-import Plutus.ChainIndex.Emulator qualified as ChainIndex
-import Plutus.Contract.Error (AssertionError (GenericAssertion))
-import Plutus.Trace.Emulator.Types (ContractInstanceLog, EmulatedWalletEffects, EmulatedWalletEffects', UserThreadMsg)
-import Plutus.Trace.Scheduler qualified as Scheduler
-import Wallet.API qualified as WAPI
-import Wallet.Emulator.Chain qualified as Chain
-import Wallet.Emulator.LogMessages (RequestHandlerLogMsg, TxBalanceMsg)
-import Wallet.Emulator.NodeClient qualified as NC
-import Wallet.Emulator.Wallet (Wallet)
-import Wallet.Emulator.Wallet qualified as Wallet
+import           Ledger                            hiding (to, value)
+import qualified Ledger.Ada                        as Ada
+import qualified Ledger.AddressMap                 as AM
+import qualified Ledger.Index                      as Index
+import qualified Ledger.Value                      as Value
+import qualified Plutus.ChainIndex.Emulator        as ChainIndex
+import           Plutus.Contract.Error             (AssertionError (GenericAssertion))
+import           Plutus.Trace.Emulator.Types       (ContractInstanceLog,
+                                                    EmulatedWalletEffects,
+                                                    EmulatedWalletEffects',
+                                                    UserThreadMsg)
+import qualified Plutus.Trace.Scheduler            as Scheduler
+import qualified Wallet.API                        as WAPI
+import qualified Wallet.Emulator.Chain             as Chain
+import           Wallet.Emulator.LogMessages       (RequestHandlerLogMsg,
+                                                    TxBalanceMsg)
+import qualified Wallet.Emulator.NodeClient        as NC
+import qualified Wallet.Emulator.Wallet            as Wallet
+import           Wallet.Emulator.Wallet            (Wallet)
 
 -- | Assertions which will be checked during execution of the emulator.
 data Assertion

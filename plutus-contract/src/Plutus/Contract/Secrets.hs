@@ -10,12 +10,11 @@ module Plutus.Contract.Secrets(
   , unsafe_escape_secret
   ) where
 
-import Control.Monad
-import Data.Aeson as Aeson (FromJSON (..), ToJSON (..), Value (..))
-import Data.Aeson.Encoding.Internal (string)
-import Data.String
-import PlutusTx.Prelude as PlutusTx
-import Prelude qualified as Haskell
+import           Control.Monad
+import           Data.Aeson                   as Aeson (FromJSON (..),
+                                                        ToJSON (..), Value (..))
+import           Data.Aeson.Encoding.Internal (string)
+import           Data.String
 
 -- | A secret value. A value of type `Secret a` can't leak onto
 -- the blockchain in plain-text unless you use an unsafe function.
@@ -28,7 +27,7 @@ newtype Secret a = MkSecret a
    because of type abstraction. Intuitively, the `PlutusTx.Extensions.Secrets` module
    does not export the `MkSecret` constructor so as long as the client code that
    imports `PlutusTx.Extensions.Secrets` does not use some unholy `unsafePerformIO` to
-   break the Haskell type system the code is guaranteed not to depend on the actual
+   break the Haskell sktype system the code is guaranteed not to depend on the actual
    value of a secret without:
      1. Using a safe function like `escape_sha2_256` or
      2. Using an unsafe function like `unsafe_escape_secret` (which has a compiler warning
@@ -54,7 +53,7 @@ newtype Secret a = MkSecret a
 -- bypassed by safe code.
 data SecretArgument a = UserSide a
                       | EndpointSide (Secret a)
-                      deriving Haskell.Show
+                      deriving Show
 
 {- Note [Secret arguments]
    When we write endpoint code we would like to specify the argument type
@@ -89,23 +88,16 @@ instance ToJSON a => ToJSON (SecretArgument a) where
   toEncoding (EndpointSide _) = string "EndpointSide *****"
 
 instance FromJSON a => FromJSON (SecretArgument a) where
-  parseJSON = liftM (EndpointSide Haskell.. mkSecret) Haskell.. parseJSON
+  parseJSON = liftM (EndpointSide . mkSecret) . parseJSON
 
-instance Haskell.Show (Secret a) where
+instance Show (Secret a) where
   show (MkSecret _) = "*****"
 
-instance Haskell.Functor Secret where
+instance Functor Secret where
   fmap f (MkSecret a) = MkSecret (f a)
 
-instance PlutusTx.Functor Secret where
-  fmap f (MkSecret a) = MkSecret (f a)
-
-instance Haskell.Applicative Secret where
+instance Applicative Secret where
   pure = mkSecret
-  (MkSecret f) <*> (MkSecret a) = MkSecret (f a)
-
-instance PlutusTx.Applicative Secret where
-  pure = MkSecret
   (MkSecret f) <*> (MkSecret a) = MkSecret (f a)
 
 instance Monad Secret where
