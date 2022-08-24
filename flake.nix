@@ -153,7 +153,8 @@
 
             hooks = {
               cabal-fmt.enable = true;
-              fourmolu.enable = true;
+              fourmolu.enable = false;
+              stylish-haskell.enable = true;
               nixpkgs-fmt.enable = true;
               shellcheck.enable = true;
               statix.enable = true;
@@ -277,19 +278,16 @@
               "${inputs.flat}"
             ];
 
-          moduleFixes = [ ];
-          /*
           moduleFixes = [
-            ( {pkgs, ...}:
-            {
-              packages = {
-                cardano-crypto-praos.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf ] ];
-                cardano-crypto-class.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf ] ];
-              };
-            }
+            ({ pkgs, ... }:
+              {
+                packages = {
+                  cardano-crypto-praos.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf ] ];
+                  cardano-crypto-class.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf ] ];
+                };
+              }
             )
           ];
-          */
 
         in
         pkgs.haskell-nix.cabalProject' {
@@ -300,7 +298,7 @@
           modules = moduleFixes ++ hackages.modules;
 
           cabalProjectLocal = ''
-            allow-newer: ekg:aeson, *:hedgehog
+            allow-newer: ekg:aeson, *:hedgehog, size-based:template-haskell
             constraints: aeson >= 2, hedgehog >= 1.1
           '';
 

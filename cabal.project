@@ -16,20 +16,6 @@ benchmarks: true
 -- The only sensible test display option.
 test-show-details: streaming
 
--- cardano-addresses unit tests bring in some version constraint conflicts:
---
--- * it has strict aeson < 1.5 dep - this will be fixed in the next release.
-allow-newer:
-    *:aeson
-  , size-based:template-haskell
-
-constraints:
-    aeson >= 2
-  , hedgehog >= 1.1
---  , protolude < 0.3.1
-  -- TODO: remove when plutus will upgrade to 0.7
---  , algebraic-graphs <= 0.6.1
-
 -- The plugin will typically fail when producing Haddock documentation. However,
 -- in this instance you can simply tell it to defer any errors to runtime (which
 -- will never happen since you're building documentation).
