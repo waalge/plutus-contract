@@ -36,9 +36,9 @@ import Ledger.Value qualified as Value
 import PlutusTx.AssocMap qualified as AMap
 import PlutusTx.Prelude qualified as PlutusTx
 import Test.Tasty (TestTree, defaultMain, testGroup)
+import Test.Tasty.Hedgehog (testPropertyNamed)
 import Test.Tasty.HUnit (testCase)
 import Test.Tasty.HUnit qualified as HUnit
-import Test.Tasty.Hedgehog (testPropertyNamed)
 
 main :: IO ()
 main = defaultMain tests

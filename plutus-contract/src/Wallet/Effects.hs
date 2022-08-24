@@ -26,12 +26,11 @@ module Wallet.Effects(
     , getClientParams
     ) where
 
-import           Control.Monad.Freer.TH      (makeEffect)
-import           Data.List.NonEmpty          (NonEmpty)
-import           Ledger                      (Address, CardanoTx, Params, Slot,
-                                              Value)
-import           Ledger.Constraints.OffChain (UnbalancedTx)
-import           Wallet.Error                (WalletAPIError)
+import Control.Monad.Freer.TH (makeEffect)
+import Data.List.NonEmpty (NonEmpty)
+import Ledger (Address, CardanoTx, Params, Slot, Value)
+import Ledger.Constraints.OffChain (UnbalancedTx)
+import Wallet.Error (WalletAPIError)
 
 data WalletEffect r where
     SubmitTxn :: CardanoTx -> WalletEffect ()

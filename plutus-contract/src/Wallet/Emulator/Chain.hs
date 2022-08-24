@@ -17,40 +17,29 @@
 
 module Wallet.Emulator.Chain where
 
-import           Control.Applicative            ((<|>))
-import           Control.Lens                   hiding (index)
-import           Control.Monad.Freer
-import           Control.Monad.Freer.Extras.Log (LogMsg, logDebug, logInfo,
-                                                 logWarn)
-import           Control.Monad.Freer.State
-import qualified Control.Monad.State            as S
-import           Data.Aeson                     (FromJSON, ToJSON)
-import           Data.Either                    (fromRight)
-import           Data.Foldable                  (traverse_)
-import           Data.List                      (partition, (\\))
-import           Data.Maybe                     (mapMaybe)
-import           Data.Monoid                    (Ap (Ap))
-import           Data.Traversable               (for)
-import           GHC.Generics                   (Generic)
-import           Ledger                         (Block, Blockchain,
-                                                 CardanoTx (..), EmulatorEra,
-                                                 OnChainTx (..), Params (..),
-                                                 ScriptValidationEvent,
-                                                 Slot (..),
-                                                 SomeCardanoApiTx (CardanoApiEmulatorEraTx),
-                                                 TxId, TxIn (txInRef),
-                                                 TxOut (txOutValue), Value,
-                                                 eitherTx,
-                                                 getCardanoTxCollateralInputs,
-                                                 getCardanoTxFee,
-                                                 getCardanoTxId,
-                                                 getCardanoTxValidityRange,
-                                                 mergeCardanoTxWith)
-import qualified Ledger.Index                   as Index
-import qualified Ledger.Interval                as Interval
-import qualified Ledger.Validation              as Validation
-import           Plutus.Contract.Util           (uncurry3)
-import           Prettyprinter
+import Control.Applicative ((<|>))
+import Control.Lens hiding (index)
+import Control.Monad.Freer
+import Control.Monad.Freer.Extras.Log (LogMsg, logDebug, logInfo, logWarn)
+import Control.Monad.Freer.State
+import Control.Monad.State qualified as S
+import Data.Aeson (FromJSON, ToJSON)
+import Data.Either (fromRight)
+import Data.Foldable (traverse_)
+import Data.List (partition, (\\))
+import Data.Maybe (mapMaybe)
+import Data.Monoid (Ap (Ap))
+import Data.Traversable (for)
+import GHC.Generics (Generic)
+import Ledger (Block, Blockchain, CardanoTx (..), EmulatorEra, OnChainTx (..), Params (..), ScriptValidationEvent,
+               Slot (..), SomeCardanoApiTx (CardanoApiEmulatorEraTx), TxId, TxIn (txInRef), TxOut (txOutValue), Value,
+               eitherTx, getCardanoTxCollateralInputs, getCardanoTxFee, getCardanoTxId, getCardanoTxValidityRange,
+               mergeCardanoTxWith)
+import Ledger.Index qualified as Index
+import Ledger.Interval qualified as Interval
+import Ledger.Validation qualified as Validation
+import Plutus.Contract.Util (uncurry3)
+import Prettyprinter
 
 -- | Events produced by the blockchain emulator.
 data ChainEvent =

@@ -71,8 +71,8 @@ import Data.Map qualified as Map
 import Data.Maybe (isNothing)
 import Data.Set (Set)
 import Data.Set qualified as Set
-import GHC.Stack (HasCallStack)
 import Gen.Cardano.Api.Typed qualified as Gen
+import GHC.Stack (HasCallStack)
 import Hedgehog
 import Hedgehog.Gen qualified as Gen
 import Hedgehog.Range qualified as Range

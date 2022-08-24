@@ -14,20 +14,17 @@ module Wallet.Emulator.LogMessages(
   , _ValidationFailed
   ) where
 
-import           Control.Lens.TH             (makePrisms)
-import           Data.Aeson                  (FromJSON, ToJSON)
-import           GHC.Generics                (Generic)
-import           Ledger                      (Address, CardanoTx, TxId,
-                                              getCardanoTxId)
-import qualified Ledger.Ada                  as Ada
-import           Ledger.Constraints.OffChain (UnbalancedTx)
-import           Ledger.Index                (ScriptValidationEvent,
-                                              ValidationError, ValidationPhase)
-import           Ledger.Slot                 (Slot)
-import           Ledger.Value                (Value)
-import           Prettyprinter               (Pretty (..), colon, hang, viaShow,
-                                              vsep, (<+>))
-import           Wallet.Emulator.Error       (WalletAPIError)
+import Control.Lens.TH (makePrisms)
+import Data.Aeson (FromJSON, ToJSON)
+import GHC.Generics (Generic)
+import Ledger (Address, CardanoTx, TxId, getCardanoTxId)
+import Ledger.Ada qualified as Ada
+import Ledger.Constraints.OffChain (UnbalancedTx)
+import Ledger.Index (ScriptValidationEvent, ValidationError, ValidationPhase)
+import Ledger.Slot (Slot)
+import Ledger.Value (Value)
+import Prettyprinter (Pretty (..), colon, hang, viaShow, vsep, (<+>))
+import Wallet.Emulator.Error (WalletAPIError)
 
 data RequestHandlerLogMsg =
     SlotNoticationTargetVsCurrent Slot Slot
