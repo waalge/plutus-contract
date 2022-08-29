@@ -1,4 +1,4 @@
-cabal-version:   3.0
+cabal-version:   3.4
 name:            plutus-ledger
 version:         1.0.0
 license:         Apache-2.0
@@ -73,7 +73,6 @@ library
     Ledger.Index.Internal
     Ledger.Orphans
     Ledger.Params
-    Ledger.Scripts
     Ledger.Scripts.Orphans
     Ledger.Slot
     Ledger.Test
@@ -118,10 +117,10 @@ library
   --------------------
   -- Local components
   --------------------
-  build-depends:      plutus-script-utils >=1.0.0
+  build-depends:
+    , freer-extras         >=1.0.0
+    , plutus-script-utils  >=1.0.0
 
-  -- FIXME: add back after externalization
-  -- , freer-extras         >=1.0.0
   --------------------------
   -- Other IOG dependencies
   --------------------------

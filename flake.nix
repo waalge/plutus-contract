@@ -114,6 +114,16 @@
         "github:Quid2/flat/ee59880f47ab835dbd73bea0847dab7869fc20d8";
       flake = false;
     };
+
+    cardano-wallet = {
+      url = "github:input-output-hk/cardano-wallet/18a931648550246695c790578d4a55ee2f10463e";
+      flake = false;
+    };
+
+    freer-extras = {
+      url = "github:mlabs-haskell/freer-extras";
+      flake = false;
+    };
   };
 
 
@@ -241,6 +251,17 @@
               "${inputs.cardano-ledger}/libs/small-steps-test"
               "${inputs.cardano-ledger}/libs/vector-map"
 
+              "${inputs.cardano-wallet}/lib/cli"
+              "${inputs.cardano-wallet}/lib/core"
+              "${inputs.cardano-wallet}/lib/core-integration"
+              "${inputs.cardano-wallet}/lib/dbvar"
+              "${inputs.cardano-wallet}/lib/launcher"
+              "${inputs.cardano-wallet}/lib/numeric"
+              "${inputs.cardano-wallet}/lib/shelley"
+              "${inputs.cardano-wallet}/lib/strict-non-empty-containers"
+              "${inputs.cardano-wallet}/lib/test-utils"
+              "${inputs.cardano-wallet}/lib/text-class"
+
               "${inputs.Win32-network}"
 
               "${inputs.iohk-monitoring-framework}/contra-tracer"
@@ -275,6 +296,8 @@
 
               "${inputs.optparse-applicative}"
 
+              "${inputs.freer-extras}"
+
               "${inputs.flat}"
             ];
 
@@ -298,13 +321,13 @@
           modules = moduleFixes ++ hackages.modules;
 
           cabalProjectLocal = ''
-            allow-newer: ekg:aeson, *:hedgehog, size-based:template-haskell
+            allow-newer: *:aeson, *:hedgehog, size-based:template-haskell
             constraints: aeson >= 2, hedgehog >= 1.1
           '';
 
           shell = {
             inherit (preCommitCheckFor system) shellHook;
-            withHoogle = true;
+            withHoogle = false;
             exactDeps = true;
 
             nativeBuildInputs = [

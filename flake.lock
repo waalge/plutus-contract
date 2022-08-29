@@ -185,6 +185,23 @@
         "type": "github"
       }
     },
+    "cardano-wallet": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1660141505,
+        "narHash": "sha256-3Rnj/g3KLzOW5YSieqsUa9IF1Td22Eskk5KuVsOFgEQ=",
+        "owner": "input-output-hk",
+        "repo": "cardano-wallet",
+        "rev": "18a931648550246695c790578d4a55ee2f10463e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "input-output-hk",
+        "repo": "cardano-wallet",
+        "rev": "18a931648550246695c790578d4a55ee2f10463e",
+        "type": "github"
+      }
+    },
     "ekg-forward": {
       "flake": false,
       "locked": {
@@ -263,6 +280,22 @@
         "owner": "Quid2",
         "repo": "flat",
         "rev": "ee59880f47ab835dbd73bea0847dab7869fc20d8",
+        "type": "github"
+      }
+    },
+    "freer-extras": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1661444602,
+        "narHash": "sha256-Fkz0Sis71TC6HtjwwUELBy56y5oLnNtJiilJVtWuAMw=",
+        "owner": "mlabs-haskell",
+        "repo": "freer-extras",
+        "rev": "86211d5004dca8b7a4a04b14fbbe934f4711a50f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mlabs-haskell",
+        "repo": "freer-extras",
         "type": "github"
       }
     },
@@ -743,9 +776,11 @@
         "cardano-ledger": "cardano-ledger",
         "cardano-node": "cardano-node",
         "cardano-prelude": "cardano-prelude",
+        "cardano-wallet": "cardano-wallet",
         "ekg-forward": "ekg-forward",
         "ekg-json": "ekg-json",
         "flat": "flat",
+        "freer-extras": "freer-extras",
         "goblins": "goblins",
         "haskell-nix": "haskell-nix",
         "haskell-nix-extra-hackage": "haskell-nix-extra-hackage",

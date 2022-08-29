@@ -5,6 +5,7 @@ packages: plutus-contract
           plutus-ledger
           plutus-ledger-constraints
           plutus-script-utils
+          plutus-chain-index-core 
 
 -- We never, ever, want this.
 write-ghc-environment-files: never
@@ -51,4 +52,3 @@ package cardano-wallet-launcher
   optimization: False
 package cardano-wallet-core-integration
   optimization: False
-<<<<<<< HEAD
