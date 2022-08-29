@@ -38,7 +38,6 @@ import Ledger (Block, Blockchain, CardanoTx (..), EmulatorEra, OnChainTx (..), P
 import Ledger.Index qualified as Index
 import Ledger.Interval qualified as Interval
 import Ledger.Validation qualified as Validation
-import Plutus.Contract.Util (uncurry3)
 import Prettyprinter
 
 -- | Events produced by the blockchain emulator.

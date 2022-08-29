@@ -67,6 +67,7 @@ library
     Plutus.Contract.Secrets
     Plutus.Contract.Types
     Wallet
+    Wallet.API
     Wallet.Emulator
     Wallet.Emulator.Chain
     Wallet.Emulator.Error
@@ -86,11 +87,11 @@ library
   -- Local components
   --------------------
   build-depends:
+    , freer-extras
     , plutus-ledger
     , plutus-ledger-constraints
     , plutus-script-utils
 
-  -- , freer-extras
   -- , plutus-chain-index-core
   --------------------------
   -- Other IOG dependencies
@@ -98,14 +99,13 @@ library
   build-depends:
     , plutus-core
     , plutus-ledger-api
+    , plutus-tx
 
   -- , cardano-api
   -- , cardano-crypto
   -- , cardano-ledger-core
   -- , cardano-wallet-core
   -- FIXME: probably needed
-  -- yeet dep
-  -- , plutus-tx
   -- , quickcheck-dynamic
 
   --if !(impl(ghcjs) || os(ghcjs))

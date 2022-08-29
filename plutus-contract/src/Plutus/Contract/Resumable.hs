@@ -125,7 +125,6 @@ data Resumable i o r where
 prompt :: Member (Resumable i o) effs => o -> Eff effs i
 prompt o = send (RRequest o)
 
-    Plutus.Contract.Oracle
 select ::
     forall i o effs a.
     Member (Resumable i o) effs

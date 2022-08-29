@@ -14,6 +14,7 @@ import Control.Monad
 import Data.Aeson as Aeson (FromJSON (..), ToJSON (..), Value (..))
 import Data.Aeson.Encoding.Internal (string)
 import Data.String
+import PlutusTx.Builtins qualified as PlutusTx
 
 -- | A secret value. A value of type `Secret a` can't leak onto
 -- the blockchain in plain-text unless you use an unsafe function.
@@ -124,8 +125,8 @@ extractSecret (EndpointSide s) = s
 -- | Take the sha2_256 hash of a secret value. The result of this
 -- function can be used on the blockchain.
 {-# INLINABLE escape_sha2_256 #-}
-escape_sha2_256 :: Secret BuiltinByteString -> BuiltinByteString
-escape_sha2_256 = sha2_256 . unsafe_escape_secret
+escape_sha2_256 :: Secret PlutusTx.BuiltinByteString -> PlutusTx.BuiltinByteString
+escape_sha2_256 = PlutusTx.sha2_256 . unsafe_escape_secret
 
 {-# WARNING unsafe_escape_secret "[Requires Review] An escape hatch is being created. This should only be used in trusted code." #-}
 unsafe_escape_secret :: Secret a -> a

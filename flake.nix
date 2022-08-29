@@ -78,7 +78,7 @@
 
     cardano-node = {
       url =
-        "github:input-output-hk/cardano-node?ref=1.35.3-rc1";
+        "github:input-output-hk/cardano-node/5e394fb016a48fe0c1c433949b6bc68f55e8ae26";
       flake = false;
     };
 
@@ -299,6 +299,8 @@
               "${inputs.freer-extras}"
 
               "${inputs.flat}"
+
+              "${inputs.freer-extras}"
             ];
 
           moduleFixes = [
