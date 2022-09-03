@@ -84,6 +84,23 @@
         "type": "github"
       }
     },
+    "cardano-addresses": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1660105670,
+        "narHash": "sha256-91F9+ckA3lBCE4dAVLDnMSpwRLa7zRUEEBYEHv0sOYk=",
+        "owner": "input-output-hk",
+        "repo": "cardano-addresses",
+        "rev": "b7273a5d3c21f1a003595ebf1e1f79c28cd72513",
+        "type": "github"
+      },
+      "original": {
+        "owner": "input-output-hk",
+        "repo": "cardano-addresses",
+        "rev": "b7273a5d3c21f1a003595ebf1e1f79c28cd72513",
+        "type": "github"
+      }
+    },
     "cardano-base": {
       "flake": false,
       "locked": {
@@ -424,6 +441,23 @@
       "original": {
         "owner": "sevanspowell",
         "repo": "hpc-coveralls",
+        "type": "github"
+      }
+    },
+    "hw-aeson": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1660113261,
+        "narHash": "sha256-v0SyVxeVBTtW1tuej4P+Kf4roO/rr2tBI7RthTlInbc=",
+        "owner": "sevanspowell",
+        "repo": "hw-aeson",
+        "rev": "b5ef03a7d7443fcd6217ed88c335f0c411a05408",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sevanspowell",
+        "repo": "hw-aeson",
+        "rev": "b5ef03a7d7443fcd6217ed88c335f0c411a05408",
         "type": "github"
       }
     },
@@ -771,6 +805,7 @@
     "root": {
       "inputs": {
         "Win32-network": "Win32-network",
+        "cardano-addresses": "cardano-addresses",
         "cardano-base": "cardano-base",
         "cardano-crypto": "cardano-crypto",
         "cardano-ledger": "cardano-ledger",
@@ -784,6 +819,7 @@
         "goblins": "goblins",
         "haskell-nix": "haskell-nix",
         "haskell-nix-extra-hackage": "haskell-nix-extra-hackage",
+        "hw-aeson": "hw-aeson",
         "io-sim": "io-sim",
         "iohk-monitoring-framework": "iohk-monitoring-framework",
         "iohk-nix": "iohk-nix",

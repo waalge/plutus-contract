@@ -27,9 +27,17 @@ module Plutus.Contract.Request(
     , HasEndpoint
     , EndpointDescription(..)
     , Endpoint
+    -- ** Wallet information
+    , ownAddresses
+    , ownPaymentPubKeyHashes
+    , ownFirstPaymentPubKeyHash
+    -- ** Submitting transactions
+    , adjustUnbalancedTx
+    , balanceTx
     -- * Etc.
     , ContractRow
     , MkTxLog(..)
+    , pabReq
     ) where
 
 import Control.Lens (Prism', preview, review, view)
@@ -60,7 +68,6 @@ import Ledger.Constraints.OffChain qualified as Constraints
 import Ledger.Tx (CardanoTx, ChainIndexTxOut, ciTxOutValue, getCardanoTxId)
 import Ledger.Typed.Scripts (Any, TypedValidator, ValidatorTypes (DatumType, RedeemerType))
 import Ledger.Value qualified as V
-import Plutus.Contract.Util (loopM)
 import Plutus.V1.Ledger.Api (Address, Datum, DatumHash, MintingPolicy, MintingPolicyHash, Redeemer, RedeemerHash,
                              StakeValidator, StakeValidatorHash, Validator, ValidatorHash)
 import PlutusTx qualified
@@ -69,7 +76,6 @@ import Plutus.Contract.Effects (ActiveEndpoint (ActiveEndpoint, aeDescription, a
                                 PABReq (AdjustUnbalancedTxReq, AwaitSlotReq, AwaitTimeReq, AwaitTxOutStatusChangeReq, AwaitTxStatusChangeReq, AwaitUtxoProducedReq, AwaitUtxoSpentReq, BalanceTxReq, ChainIndexQueryReq, CurrentChainIndexSlotReq, CurrentPABSlotReq, CurrentTimeReq, ExposeEndpointReq, OwnAddressesReq, OwnContractInstanceIdReq, WriteBalancedTxReq, YieldUnbalancedTxReq),
                                 PABResp (ExposeEndpointResp))
 import Plutus.Contract.Effects qualified as E
-import Plutus.Contract.Logging (logDebug)
 import Plutus.Contract.Schema (Input, Output)
 import Wallet.Types (ContractInstanceId, EndpointDescription (EndpointDescription),
                      EndpointValue (EndpointValue, unEndpointValue))
@@ -82,7 +88,7 @@ import Plutus.ChainIndex.Types (RollbackState (Unknown), Tip, TxOutStatus, TxSta
 import Plutus.Contract.Error (AsContractError (_ChainIndexContractError, _ConstraintResolutionContractError, _EndpointDecodeContractError, _ResumableContractError, _TxToCardanoConvertContractError, _WalletContractError))
 import Plutus.Contract.Resumable (prompt)
 import Plutus.Contract.Types (Contract (Contract), MatchingError (WrongVariantError), Promise (Promise), mapError,
-                              runError, throwError)
+                              throwError)
 import Plutus.V1.Ledger.Address (toPubKeyHash)
 import Wallet.Emulator.Error (WalletAPIError (NoPaymentPubKeyHashError))
 
@@ -99,6 +105,70 @@ type HasEndpoint l a s =
   , KnownSymbol l
   , ContractRow s
   )
+
+
+{- Send a 'PABReq' and return the appropriate 'PABResp'
+-}
+pabReq ::
+  forall w s e a.
+  ( AsContractError e
+  )
+  => PABReq -- ^ The request to send
+  -> Prism' PABResp a -- ^ Prism for the response
+  -> Contract w s e a
+pabReq req prism = Contract $ do
+  x <- prompt @PABResp @PABReq req
+  case preview prism x of
+    Just r -> pure r
+    _      ->
+        E.throwError @e
+            $ review _ResumableContractError
+            $ WrongVariantError
+            $ "unexpected answer: " <> tshow x
+
+-- | Adjust the unbalanced tx
+adjustUnbalancedTx ::
+    forall w s e.
+    ( AsContractError e
+    )
+    => UnbalancedTx
+    -> Contract w s e UnbalancedTx
+adjustUnbalancedTx utx =
+  let req = pabReq (AdjustUnbalancedTxReq utx) E._AdjustUnbalancedTxResp in
+  req >>= either (throwError . review _TxToCardanoConvertContractError) pure
+
+-- | Get the addresses belonging to the wallet that runs this contract.
+--   * Any funds paid to one of these addresses will be treated as the wallet's own
+--     funds
+--   * The wallet is able to sign transactions with the private key of one of its
+--     public key, for example, if the public key is added to the
+--     'requiredSignatures' field of 'Tx'.
+--   * There is a 1-n relationship between wallets and addresses (although in
+--     the mockchain n=1)
+ownAddresses :: forall w s e. (AsContractError e) => Contract w s e (NonEmpty Address)
+ownAddresses = pabReq OwnAddressesReq E._OwnAddressesResp
+
+ownPaymentPubKeyHashes :: forall w s e. (AsContractError e) => Contract w s e [PaymentPubKeyHash]
+ownPaymentPubKeyHashes = do
+    addrs <- ownAddresses
+    pure $ fmap PaymentPubKeyHash $ mapMaybe toPubKeyHash $ NonEmpty.toList addrs
+
+
+ownFirstPaymentPubKeyHash :: forall w s e. (AsContractError e) => Contract w s e PaymentPubKeyHash
+ownFirstPaymentPubKeyHash = do
+    pkhs <- ownPaymentPubKeyHashes
+    case pkhs of
+      []      -> throwError $ review _WalletContractError NoPaymentPubKeyHashError
+      (pkh:_) -> pure pkh
+
+-- | Send an unbalanced transaction to be balanced. Returns the balanced transaction.
+--    Throws an error if balancing failed.
+balanceTx :: forall w s e. (AsContractError e) => UnbalancedTx -> Contract w s e CardanoTx
+-- See Note [Injecting errors into the user's error type]
+balanceTx t =
+  let req = pabReq (BalanceTxReq t) E._BalanceTxResp in
+  req >>= either (throwError . review _WalletContractError) pure . view E.balanceTxResponse
+
 
 type Endpoint l a = l .== (EndpointValue a, ActiveEndpoint)
 

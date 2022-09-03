@@ -61,6 +61,7 @@ library
     Plutus.Contract.Constraints
     Plutus.Contract.Effects
     Plutus.Contract.Error
+    Plutus.Contract.Logging
     Plutus.Contract.Request
     Plutus.Contract.Resumable
     Plutus.Contract.Schema
@@ -88,23 +89,23 @@ library
   --------------------
   build-depends:
     , freer-extras
+    , plutus-chain-index-core
     , plutus-ledger
     , plutus-ledger-constraints
     , plutus-script-utils
 
-  -- , plutus-chain-index-core
   --------------------------
   -- Other IOG dependencies
   --------------------------
   build-depends:
+    , cardano-api
+    , cardano-crypto
+    , cardano-wallet-core
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
 
-  -- , cardano-api
-  -- , cardano-crypto
   -- , cardano-ledger-core
-  -- , cardano-wallet-core
   -- FIXME: probably needed
   -- , quickcheck-dynamic
 
@@ -149,12 +150,12 @@ library
     , streaming
     , template-haskell
     , text
+    , text-class
     , transformers
     , uniplate
     , unordered-containers
     , uuid
 
-  -- , text-class
   if flag(defer-plugin-errors)
     ghc-options:   -fplugin-opt PlutusTx.Plugin:defer-errors
 

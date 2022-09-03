@@ -23,81 +23,21 @@ module Plutus.Contract(
     , Plutus.Contract.Types.select
     , Plutus.Contract.Types.selectList
     , Plutus.Contract.Types.never
-    -- * Dealing with time
-    , Request.awaitSlot
-    , Request.isSlot
-    , Request.currentSlot
-    , Request.currentPABSlot
-    , Request.currentChainIndexSlot
-    , Request.waitNSlots
-    , Request.awaitTime
-    , Request.isTime
-    , Request.currentTime
-    , Request.waitNMilliSeconds
     -- * Endpoints
     , Request.HasEndpoint
     , Request.EndpointDescription(..)
     , Request.Endpoint
-    , Request.endpoint
-    , Request.handleEndpoint
-    , Request.endpointWithMeta
     , Schema.EmptySchema
-    -- * Blockchain events
-    , Request.watchAddressUntilSlot
-    , Request.watchAddressUntilTime
-    , Request.fundsAtAddressGt
-    , Request.fundsAtAddressGeq
-    , Request.awaitUtxoSpent
-    , Request.utxoIsSpent
-    , Request.awaitUtxoProduced
-    , Request.utxoIsProduced
-    -- * Chain index requests
-    , Request.datumFromHash
-    , Request.validatorFromHash
-    , Request.mintingPolicyFromHash
-    , Request.stakeValidatorFromHash
-    , Request.txOutFromRef
-    , Request.unspentTxOutFromRef
-    , Request.txFromTxId
-    , Request.utxoRefMembership
-    , Request.utxoRefsAt
-    , Request.utxoRefsWithCurrency
-    , Request.utxosAt
-    , Request.utxosTxOutTxFromTx
-    , Request.getTip
     -- * Wallet's information
-    , Request.ownPaymentPubKeyHash
-    , Request.ownPaymentPubKeyHashes
-    , Request.ownFirstPaymentPubKeyHash
-    , Request.ownAddresses
-    , Request.ownUtxos
     -- * Contract instance Id
     , Wallet.Types.ContractInstanceId
-    , Request.ownInstanceId
     -- * Notifications
     , tell
     -- * Transactions
     , WalletAPIError
     , Request.adjustUnbalancedTx
-    , Request.submitTx
-    , Request.submitTxConfirmed
-    , Request.submitTxConstraints
-    , Request.submitTxConstraintsSpending
-    , Request.submitTxConstraintsWith
-    , Request.submitUnbalancedTx
-    , Request.submitBalancedTx
     , Request.balanceTx
-    , Request.mkTxConstraints
-    , Request.yieldUnbalancedTx
-    -- ** Tx confirmation
-    , Request.awaitTxConfirmed
-    , Request.awaitTxStatusChange
-    , Request.isTxConfirmed
-    -- ** Tx output confirmation
-    , Request.awaitTxOutStatusChange
     -- * Checkpoints
-    , Plutus.Contract.Types.checkpoint
-    , Plutus.Contract.Types.checkpointLoop
     , Plutus.Contract.Types.AsCheckpointError(..)
     , Plutus.Contract.Types.CheckpointError(..)
     -- * Logging

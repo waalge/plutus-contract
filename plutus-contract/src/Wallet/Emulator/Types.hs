@@ -20,7 +20,6 @@ module Wallet.Emulator.Types(
     Crypto.XPub,
     Wallet.Emulator.Wallet.mockWalletPaymentPubKey,
     Wallet.Emulator.Wallet.mockWalletPaymentPubKeyHash,
-    addSignature,
     Wallet.Emulator.Wallet.knownWallets,
     Wallet.Emulator.Wallet.knownWallet,
     Ledger.CardanoWallet.WalletNumber(..),
@@ -29,7 +28,6 @@ module Wallet.Emulator.Types(
     Ledger.CardanoWallet.MockWallet(..),
     Wallet.Emulator.Chain.TxPool,
     -- * Emulator
-    EmulatorEffs,
     Wallet.Emulator.MultiAgent.Assertion(OwnFundsEqual, IsValidated),
     Wallet.Emulator.MultiAgent.assert,
     Wallet.Emulator.MultiAgent.assertIsValidated,
@@ -60,7 +58,6 @@ module Wallet.Emulator.Types(
     Wallet.Emulator.Chain.index,
     Wallet.Emulator.MultiAgent.chainState,
     Wallet.Emulator.Chain.currentSlot,
-    processEmulated,
     Wallet.Emulator.MultiAgent.fundsDistribution,
     Wallet.Emulator.MultiAgent.emLog,
     Wallet.Emulator.Wallet.selectCoin

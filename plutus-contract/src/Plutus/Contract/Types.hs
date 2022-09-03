@@ -22,10 +22,20 @@ module Plutus.Contract.Types(
     , IsContract(..)
     -- * Select
     , Promise(..)
+    , promiseBind
+    , promiseMap
+    , select
+    , selectEither
+    , selectList
+    , never
     -- * Error handling
     , Plutus.Contract.Error.ContractError(..)
     , Plutus.Contract.Error.AsContractError(..)
     , Plutus.Contract.Error.MatchingError(..)
+    , mapError
+    , runError
+    , handleError
+    , throwError
     -- * Checkpoints
     , AsCheckpointError(..)
     , CheckpointError(..)
@@ -105,6 +115,31 @@ instance MonadError e (Contract w s e) where
 instance Bifunctor (Contract w s) where
   bimap l r = mapError l . fmap r
 
+-- | Transform any exceptions thrown by the 'Contract' using the given function.
+mapError ::
+  forall w s e e' a.
+  (e -> e')
+  -> Contract w s e a
+  -> Contract w s e' a
+mapError f = handleError (throwError . f)
+
+-- | Turn a contract with error type 'e' and return type 'a' into one with
+--   any error type (ie. throwing no errors) that returns 'Either e a'
+runError ::
+  forall w s e e0 a.
+  Contract w s e a
+  -> Contract w s e0 (Either e a)
+runError (Contract r) = Contract (E.runError $ raiseUnder r)
+
+-- | Handle errors, potentially throwing new errors.
+handleError ::
+  forall w s e e' a.
+  (e -> Contract w s e' a)
+  -> Contract w s e a
+  -> Contract w s e' a
+handleError f (Contract c) = Contract c' where
+  c' = E.handleError @e (raiseUnder c) (fmap unContract f)
+
 instance Semigroup a => Semigroup (Contract w s e a) where
   Contract ma <> Contract ma' = Contract $ (<>) <$> ma <*> ma'
 
@@ -125,6 +160,42 @@ instance IsContract Contract where
 
 instance IsContract Promise where
   toContract = awaitPromise
+
+
+-- | @select@ returns the contract that makes progress first, discarding the
+--   other one.
+--
+-- However, note that if multiples promises are chained together like
+-- @P1 `select` P2 `select` P3@ and all three can make progress at the same
+-- moment, then @select@ will prioritize the promises starting from the right
+-- (first @P3@ then @P2@ then @P1@).
+select :: forall w s e a. Promise w s e a -> Promise w s e a -> Promise w s e a
+select (Promise (Contract l)) (Promise (Contract r)) = Promise (Contract (Resumable.select @PABResp @PABReq @(ContractEffs w e) l r))
+
+-- | A variant of @select@ for contracts with different return types.
+selectEither :: forall w s e a b. Promise w s e a -> Promise w s e b -> Promise w s e (Either a b)
+selectEither l r = (Left <$> l) `select` (Right <$> r)
+
+-- | A `Promise` that is never fulfilled. This is the identity of `select`.
+never :: Promise w s e a
+never = Promise (Contract $ Resumable.never @PABResp @PABReq)
+
+-- | Run more `Contract` code after the `Promise`.
+promiseBind :: Promise w s e a -> (a -> Contract w s e b) -> Promise w s e b
+promiseBind (Promise ma) f = Promise (ma >>= f)
+
+-- | Lift a mapping function for `Contract` to a mapping function for `Promise`.
+promiseMap :: (Contract w1 s1 e1 a1 -> Contract w2 s2 e2 a2) -> Promise w1 s1 e1 a1 -> Promise w2 s2 e2 a2
+promiseMap f (Promise ma) = Promise (f ma)
+
+-- | 'selectList' returns the contract that makes progress first, discarding the
+-- other ones.
+--
+-- However, if multiple contracts can make progress, 'selectList' prioritizes
+-- the ones appearing first in the input list. Therefore, the order of the
+-- list of promises is important.
+selectList :: [Promise w s e a] -> Contract w s e a
+selectList = awaitPromise . foldr1 select . reverse
 
 type SuspendedContractEffects w e =
   Error e

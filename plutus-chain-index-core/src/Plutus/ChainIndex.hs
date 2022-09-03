@@ -22,11 +22,11 @@ import Plutus.ChainIndex.TxOutBalance as Export hiding (fromBlock, fromTx, isSpe
 import Plutus.ChainIndex.Types as Export
 import Plutus.ChainIndex.UtxoState as Export
 
-import Cardano.BM.Trace (Trace)
+import Cardano.BM.Trace (Trace, logDebug)
 import Control.Concurrent.STM (TVar, atomically, readTVarIO, writeTVar)
 import Control.Monad.Freer (Eff, LastMember, Member, interpret)
 import Control.Monad.Freer.Error (handleError, runError, throwError)
-import Control.Monad.Freer.Extras.Beam (BeamEffect, handleBeam)
+import Control.Monad.Freer.Extras.Beam (BeamEffect, BeamLog (SqlLog), handleBeam)
 import Control.Monad.Freer.Extras.Log (LogMsg)
 import Control.Monad.Freer.Extras.Modify (raiseEnd, raiseMUnderN)
 import Control.Monad.Freer.Reader (runReader)
@@ -68,7 +68,7 @@ handleChainIndexEffects RunRequirements{trace, stateTVar, pool, securityParam} a
         $ runReader (Depth securityParam)
         $ runError @ChainIndexError
         $ flip handleError (throwError . BeamEffectError)
-        $ interpret (handleBeam (convertLog (PrettyObject . BeamLogItem) trace))
+        $ interpret (handleBeam (logDebug (convertLog (PrettyObject . BeamLogItem) trace)))
         $ interpret handleControl
         $ interpret handleQuery
         -- Insert the 5 effects needed by the handlers of the 3 chain index effects between those 3 effects and 'effs'.

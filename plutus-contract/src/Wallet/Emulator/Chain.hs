@@ -17,27 +17,14 @@
 
 module Wallet.Emulator.Chain where
 
-import Control.Applicative ((<|>))
 import Control.Lens hiding (index)
-import Control.Monad.Freer
-import Control.Monad.Freer.Extras.Log (LogMsg, logDebug, logInfo, logWarn)
+import Control.Monad.Freer.Extras.Log (LogMsg)
 import Control.Monad.Freer.State
-import Control.Monad.State qualified as S
+import Control.Monad.Freer.TH (makeEffect)
 import Data.Aeson (FromJSON, ToJSON)
-import Data.Either (fromRight)
-import Data.Foldable (traverse_)
-import Data.List (partition, (\\))
-import Data.Maybe (mapMaybe)
-import Data.Monoid (Ap (Ap))
-import Data.Traversable (for)
 import GHC.Generics (Generic)
-import Ledger (Block, Blockchain, CardanoTx (..), EmulatorEra, OnChainTx (..), Params (..), ScriptValidationEvent,
-               Slot (..), SomeCardanoApiTx (CardanoApiEmulatorEraTx), TxId, TxIn (txInRef), TxOut (txOutValue), Value,
-               eitherTx, getCardanoTxCollateralInputs, getCardanoTxFee, getCardanoTxId, getCardanoTxValidityRange,
-               mergeCardanoTxWith)
+import Ledger (Block, Blockchain, CardanoTx (..), Params (..), ScriptValidationEvent, Slot (..), TxId, Value)
 import Ledger.Index qualified as Index
-import Ledger.Interval qualified as Interval
-import Ledger.Validation qualified as Validation
 import Prettyprinter
 
 -- | Events produced by the blockchain emulator.
@@ -79,6 +66,8 @@ data ChainEffect r where
     QueueTx :: CardanoTx -> ChainEffect ()
     GetCurrentSlot :: ChainEffect Slot
     GetParams :: ChainEffect Params
+
+makeEffect ''ChainEffect
 
 type ChainEffs = '[State ChainState, LogMsg ChainEvent]
 

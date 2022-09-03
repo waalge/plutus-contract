@@ -38,6 +38,15 @@
       flake = false;
     };
 
+    cardano-addresses = {
+      url = "github:input-output-hk/cardano-addresses/b7273a5d3c21f1a003595ebf1e1f79c28cd72513";
+      flake = false;
+    };
+    hw-aeson = {
+      url = "github:sevanspowell/hw-aeson/b5ef03a7d7443fcd6217ed88c335f0c411a05408";
+      flake = false;
+    };
+
     cardano-base = {
       url =
         "github:input-output-hk/cardano-base/0f3a867493059e650cda69e20a5cbf1ace289a57";
@@ -262,6 +271,9 @@
               "${inputs.cardano-wallet}/lib/test-utils"
               "${inputs.cardano-wallet}/lib/text-class"
 
+              "${inputs.cardano-addresses}/command-line"
+              "${inputs.cardano-addresses}/core"
+
               "${inputs.Win32-network}"
 
               "${inputs.iohk-monitoring-framework}/contra-tracer"
@@ -301,6 +313,8 @@
               "${inputs.flat}"
 
               "${inputs.freer-extras}"
+
+              "${inputs.hw-aeson}"
             ];
 
           moduleFixes = [
@@ -317,13 +331,13 @@
         in
         pkgs.haskell-nix.cabalProject' {
           src = ./.;
-          index-state = "2022-02-22T20:47:03Z";
+          index-state = "2022-05-18T00:00:00Z";
           inherit compiler-nix-name;
           inherit (hackages) extra-hackages extra-hackage-tarballs;
           modules = moduleFixes ++ hackages.modules;
 
           cabalProjectLocal = ''
-            allow-newer: *:aeson, *:hedgehog, size-based:template-haskell
+            allow-newer: *:aeson, *:hedgehog, size-based:template-haskell, *:hw-aeson
             constraints: aeson >= 2, hedgehog >= 1.1
           '';
 
