@@ -2,7 +2,6 @@
   description = "Plutus Contract API";
 
   inputs = {
-
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     haskell-nix.url = "github:input-output-hk/haskell.nix";
     haskell-nix-extra-hackage = {
@@ -190,133 +189,134 @@
       ghcVersion = "8107";
       compiler-nix-name = "ghc" + ghcVersion;
 
+      hackagesFor = system: haskell-nix-extra-hackage.mkHackagesFor system compiler-nix-name
+        [
+          "${inputs.plutus}/plutus-core"
+          "${inputs.plutus}/plutus-ledger-api"
+          "${inputs.plutus}/plutus-tx"
+          "${inputs.plutus}/plutus-tx-plugin"
+          "${inputs.plutus}/prettyprinter-configurable"
+          "${inputs.plutus}/stubs/plutus-ghc-stub"
+          "${inputs.plutus}/word-array"
+
+          "${inputs.ouroboros-network}/monoidal-synchronisation"
+          "${inputs.ouroboros-network}/network-mux"
+          "${inputs.ouroboros-network}/ntp-client"
+          "${inputs.ouroboros-network}/ouroboros-consensus"
+          "${inputs.ouroboros-network}/ouroboros-consensus-byron"
+          "${inputs.ouroboros-network}/ouroboros-consensus-cardano"
+          "${inputs.ouroboros-network}/ouroboros-consensus-protocol"
+          "${inputs.ouroboros-network}/ouroboros-consensus-shelley"
+          "${inputs.ouroboros-network}/ouroboros-network"
+          "${inputs.ouroboros-network}/ouroboros-network-framework"
+          "${inputs.ouroboros-network}/ouroboros-network-testing"
+
+          "${inputs.cardano-base}/base-deriving-via"
+          "${inputs.cardano-base}/binary"
+          "${inputs.cardano-base}/binary/test"
+          "${inputs.cardano-base}/cardano-crypto-class"
+          "${inputs.cardano-base}/cardano-crypto-praos"
+          "${inputs.cardano-base}/cardano-crypto-tests"
+          "${inputs.cardano-base}/measures"
+          "${inputs.cardano-base}/orphans-deriving-via"
+          "${inputs.cardano-base}/slotting"
+          "${inputs.cardano-base}/strict-containers"
+
+          "${inputs.cardano-prelude}/cardano-prelude"
+          "${inputs.cardano-prelude}/cardano-prelude-test"
+
+
+          "${inputs.cardano-crypto}"
+
+
+          "${inputs.cardano-ledger}/eras/alonzo/impl"
+          "${inputs.cardano-ledger}/eras/alonzo/test-suite"
+          "${inputs.cardano-ledger}/eras/babbage/impl"
+          "${inputs.cardano-ledger}/eras/byron/chain/executable-spec"
+          "${inputs.cardano-ledger}/eras/byron/crypto"
+          "${inputs.cardano-ledger}/eras/byron/crypto/test"
+          "${inputs.cardano-ledger}/eras/byron/ledger/executable-spec"
+          "${inputs.cardano-ledger}/eras/byron/ledger/impl"
+          "${inputs.cardano-ledger}/eras/byron/ledger/impl/test"
+          "${inputs.cardano-ledger}/eras/shelley-ma/impl"
+          "${inputs.cardano-ledger}/eras/shelley-ma/test-suite"
+          "${inputs.cardano-ledger}/eras/shelley/impl"
+          "${inputs.cardano-ledger}/eras/shelley/test-suite"
+          "${inputs.cardano-ledger}/libs/cardano-data"
+          "${inputs.cardano-ledger}/libs/cardano-ledger-core"
+          "${inputs.cardano-ledger}/libs/cardano-ledger-pretty"
+          "${inputs.cardano-ledger}/libs/cardano-protocol-tpraos"
+          "${inputs.cardano-ledger}/libs/non-integral"
+          "${inputs.cardano-ledger}/libs/set-algebra"
+          "${inputs.cardano-ledger}/libs/small-steps"
+          "${inputs.cardano-ledger}/libs/small-steps-test"
+          "${inputs.cardano-ledger}/libs/vector-map"
+
+          "${inputs.cardano-wallet}/lib/cli"
+          "${inputs.cardano-wallet}/lib/core"
+          "${inputs.cardano-wallet}/lib/core-integration"
+          "${inputs.cardano-wallet}/lib/dbvar"
+          "${inputs.cardano-wallet}/lib/launcher"
+          "${inputs.cardano-wallet}/lib/numeric"
+          "${inputs.cardano-wallet}/lib/shelley"
+          "${inputs.cardano-wallet}/lib/strict-non-empty-containers"
+          "${inputs.cardano-wallet}/lib/test-utils"
+          "${inputs.cardano-wallet}/lib/text-class"
+
+          "${inputs.cardano-addresses}/command-line"
+          "${inputs.cardano-addresses}/core"
+
+          "${inputs.Win32-network}"
+
+          "${inputs.iohk-monitoring-framework}/contra-tracer"
+          "${inputs.iohk-monitoring-framework}/iohk-monitoring"
+          "${inputs.iohk-monitoring-framework}/tracer-transformers"
+          "${inputs.iohk-monitoring-framework}/plugins/backend-ekg"
+          "${inputs.iohk-monitoring-framework}/plugins/backend-aggregation"
+          "${inputs.iohk-monitoring-framework}/plugins/backend-monitoring"
+          "${inputs.iohk-monitoring-framework}/plugins/backend-trace-forwarder"
+
+          "${inputs.cardano-node}/cardano-api"
+          "${inputs.cardano-node}/cardano-cli"
+          "${inputs.cardano-node}/cardano-git-rev"
+          "${inputs.cardano-node}/cardano-node"
+          "${inputs.cardano-node}/trace-dispatcher"
+          "${inputs.cardano-node}/trace-forward"
+          "${inputs.cardano-node}/trace-resources"
+
+          "${inputs.goblins}"
+
+          "${inputs.io-sim}/io-classes"
+          "${inputs.io-sim}/io-sim"
+          "${inputs.io-sim}/strict-stm"
+
+          "${inputs.typed-protocols}/typed-protocols"
+          "${inputs.typed-protocols}/typed-protocols-cborg"
+          "${inputs.typed-protocols}/typed-protocols-examples"
+
+          "${inputs.ekg-forward}"
+
+          "${inputs.ekg-json}"
+
+          "${inputs.optparse-applicative}"
+
+          "${inputs.freer-extras}"
+
+          "${inputs.flat}"
+
+          "${inputs.freer-extras}"
+
+          "${inputs.hw-aeson}"
+        ];
+
+
       projectFor = system:
         let
           pkgs = nixpkgsFor system;
           plainPkgs = plainNixpkgsFor system;
+          hackages = hackagesFor system;
 
           hls = pkgs.haskell-language-server.override { supportedGhcVersions = [ ghcVersion ]; };
-
-          hackages = haskell-nix-extra-hackage.mkHackagesFor system compiler-nix-name
-            [
-              "${inputs.plutus}/plutus-core"
-              "${inputs.plutus}/plutus-ledger-api"
-              "${inputs.plutus}/plutus-tx"
-              "${inputs.plutus}/plutus-tx-plugin"
-              "${inputs.plutus}/prettyprinter-configurable"
-              "${inputs.plutus}/stubs/plutus-ghc-stub"
-              "${inputs.plutus}/word-array"
-
-              "${inputs.ouroboros-network}/monoidal-synchronisation"
-              "${inputs.ouroboros-network}/network-mux"
-              "${inputs.ouroboros-network}/ntp-client"
-              "${inputs.ouroboros-network}/ouroboros-consensus"
-              "${inputs.ouroboros-network}/ouroboros-consensus-byron"
-              "${inputs.ouroboros-network}/ouroboros-consensus-cardano"
-              "${inputs.ouroboros-network}/ouroboros-consensus-protocol"
-              "${inputs.ouroboros-network}/ouroboros-consensus-shelley"
-              "${inputs.ouroboros-network}/ouroboros-network"
-              "${inputs.ouroboros-network}/ouroboros-network-framework"
-              "${inputs.ouroboros-network}/ouroboros-network-testing"
-
-              "${inputs.cardano-base}/base-deriving-via"
-              "${inputs.cardano-base}/binary"
-              "${inputs.cardano-base}/binary/test"
-              "${inputs.cardano-base}/cardano-crypto-class"
-              "${inputs.cardano-base}/cardano-crypto-praos"
-              "${inputs.cardano-base}/cardano-crypto-tests"
-              "${inputs.cardano-base}/measures"
-              "${inputs.cardano-base}/orphans-deriving-via"
-              "${inputs.cardano-base}/slotting"
-              "${inputs.cardano-base}/strict-containers"
-
-              "${inputs.cardano-prelude}/cardano-prelude"
-              "${inputs.cardano-prelude}/cardano-prelude-test"
-
-
-              "${inputs.cardano-crypto}"
-
-
-              "${inputs.cardano-ledger}/eras/alonzo/impl"
-              "${inputs.cardano-ledger}/eras/alonzo/test-suite"
-              "${inputs.cardano-ledger}/eras/babbage/impl"
-              "${inputs.cardano-ledger}/eras/byron/chain/executable-spec"
-              "${inputs.cardano-ledger}/eras/byron/crypto"
-              "${inputs.cardano-ledger}/eras/byron/crypto/test"
-              "${inputs.cardano-ledger}/eras/byron/ledger/executable-spec"
-              "${inputs.cardano-ledger}/eras/byron/ledger/impl"
-              "${inputs.cardano-ledger}/eras/byron/ledger/impl/test"
-              "${inputs.cardano-ledger}/eras/shelley-ma/impl"
-              "${inputs.cardano-ledger}/eras/shelley-ma/test-suite"
-              "${inputs.cardano-ledger}/eras/shelley/impl"
-              "${inputs.cardano-ledger}/eras/shelley/test-suite"
-              "${inputs.cardano-ledger}/libs/cardano-data"
-              "${inputs.cardano-ledger}/libs/cardano-ledger-core"
-              "${inputs.cardano-ledger}/libs/cardano-ledger-pretty"
-              "${inputs.cardano-ledger}/libs/cardano-protocol-tpraos"
-              "${inputs.cardano-ledger}/libs/non-integral"
-              "${inputs.cardano-ledger}/libs/set-algebra"
-              "${inputs.cardano-ledger}/libs/small-steps"
-              "${inputs.cardano-ledger}/libs/small-steps-test"
-              "${inputs.cardano-ledger}/libs/vector-map"
-
-              "${inputs.cardano-wallet}/lib/cli"
-              "${inputs.cardano-wallet}/lib/core"
-              "${inputs.cardano-wallet}/lib/core-integration"
-              "${inputs.cardano-wallet}/lib/dbvar"
-              "${inputs.cardano-wallet}/lib/launcher"
-              "${inputs.cardano-wallet}/lib/numeric"
-              "${inputs.cardano-wallet}/lib/shelley"
-              "${inputs.cardano-wallet}/lib/strict-non-empty-containers"
-              "${inputs.cardano-wallet}/lib/test-utils"
-              "${inputs.cardano-wallet}/lib/text-class"
-
-              "${inputs.cardano-addresses}/command-line"
-              "${inputs.cardano-addresses}/core"
-
-              "${inputs.Win32-network}"
-
-              "${inputs.iohk-monitoring-framework}/contra-tracer"
-              "${inputs.iohk-monitoring-framework}/iohk-monitoring"
-              "${inputs.iohk-monitoring-framework}/tracer-transformers"
-              "${inputs.iohk-monitoring-framework}/plugins/backend-ekg"
-              "${inputs.iohk-monitoring-framework}/plugins/backend-aggregation"
-              "${inputs.iohk-monitoring-framework}/plugins/backend-monitoring"
-              "${inputs.iohk-monitoring-framework}/plugins/backend-trace-forwarder"
-
-              "${inputs.cardano-node}/cardano-api"
-              "${inputs.cardano-node}/cardano-cli"
-              "${inputs.cardano-node}/cardano-git-rev"
-              "${inputs.cardano-node}/cardano-node"
-              "${inputs.cardano-node}/trace-dispatcher"
-              "${inputs.cardano-node}/trace-forward"
-              "${inputs.cardano-node}/trace-resources"
-
-              "${inputs.goblins}"
-
-              "${inputs.io-sim}/io-classes"
-              "${inputs.io-sim}/io-sim"
-              "${inputs.io-sim}/strict-stm"
-
-              "${inputs.typed-protocols}/typed-protocols"
-              "${inputs.typed-protocols}/typed-protocols-cborg"
-              "${inputs.typed-protocols}/typed-protocols-examples"
-
-              "${inputs.ekg-forward}"
-
-              "${inputs.ekg-json}"
-
-              "${inputs.optparse-applicative}"
-
-              "${inputs.freer-extras}"
-
-              "${inputs.flat}"
-
-              "${inputs.freer-extras}"
-
-              "${inputs.hw-aeson}"
-            ];
-
           moduleFixes = [
             ({ pkgs, ... }:
               {
@@ -361,7 +361,7 @@
         };
     in
     {
-      inherit plainNixpkgsFor;
+      inherit plainNixpkgsFor hackagesFor;
 
 
       project = perSystem projectFor;
