@@ -309,6 +309,12 @@
           "${inputs.hw-aeson}"
         ];
 
+      cabalProjectLocal = ''
+        allow-newer: *:aeson, *:hedgehog, size-based:template-haskell, *:hw-aeson
+        constraints: aeson >= 2, hedgehog >= 1.1
+      '';
+
+
 
       projectFor = system:
         let
@@ -332,14 +338,9 @@
         pkgs.haskell-nix.cabalProject' {
           src = ./.;
           index-state = "2022-05-18T00:00:00Z";
-          inherit compiler-nix-name;
+          inherit compiler-nix-name cabalProjectLocal;
           inherit (hackages) extra-hackages extra-hackage-tarballs;
           modules = moduleFixes ++ hackages.modules;
-
-          cabalProjectLocal = ''
-            allow-newer: *:aeson, *:hedgehog, size-based:template-haskell, *:hw-aeson
-            constraints: aeson >= 2, hedgehog >= 1.1
-          '';
 
           shell = {
             inherit (preCommitCheckFor system) shellHook;
@@ -361,7 +362,7 @@
         };
     in
     {
-      inherit plainNixpkgsFor hackagesFor;
+      inherit plainNixpkgsFor hackagesFor cabalProjectLocal;
 
 
       project = perSystem projectFor;
