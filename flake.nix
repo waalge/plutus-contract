@@ -170,7 +170,7 @@
             };
 
             hooks = {
-              cabal-fmt.enable = true;
+              cabal-fmt.enable = false;
               fourmolu.enable = false;
               stylish-haskell.enable = true;
               nixpkgs-fmt.enable = true;
@@ -344,7 +344,7 @@
 
           shell = {
             inherit (preCommitCheckFor system) shellHook;
-            withHoogle = false;
+            withHoogle = true;
             exactDeps = true;
 
             nativeBuildInputs = [
