@@ -42,6 +42,7 @@ common lang
     -Wincomplete-uni-patterns -Wincomplete-record-updates
     -Wredundant-constraints -Widentities -fobject-code
     -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
+    -Wmissing-home-modules
 
 flag defer-plugin-errors
   description:
@@ -66,9 +67,16 @@ library
     Plutus.Contract.Resumable
     Plutus.Contract.Schema
     Plutus.Contract.Secrets
+    Plutus.Contract.Trace
+    Plutus.Contract.Trace.RequestHandler
     Plutus.Contract.Types
+    Plutus.Trace
+    Plutus.Trace.Tag
+    Plutus.Trace.Scheduler
+    Plutus.Trace.Emulator.Types
     Wallet
     Wallet.API
+    Wallet.Effects
     Wallet.Emulator
     Wallet.Emulator.Chain
     Wallet.Emulator.Error
@@ -80,6 +88,10 @@ library
     Wallet.Emulator.Types
     Wallet.Emulator.Wallet
     Wallet.Error
+    Wallet.Graph
+    Wallet.Rollup
+    Wallet.Rollup.Types
+    Wallet.Rollup.Render
     Wallet.Types
 
   hs-source-dirs:  src
