@@ -172,12 +172,12 @@
             hooks = {
               cabal-fmt.enable = false;
               fourmolu.enable = false;
-              stylish-haskell.enable = true;
+              hlint.enable = false;
+              markdownlint.enable = false;
               nixpkgs-fmt.enable = true;
               shellcheck.enable = true;
               statix.enable = true;
-              hlint.enable = false;
-              markdownlint.enable = false;
+              stylish-haskell.enable = true;
             };
 
             tools = {
