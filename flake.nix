@@ -86,7 +86,7 @@
 
     cardano-node = {
       url =
-        "github:input-output-hk/cardano-node/5e394fb016a48fe0c1c433949b6bc68f55e8ae26";
+        "github:input-output-hk/cardano-node/ea6d78c775d0f70dde979b52de022db749a2cc32";
       flake = false;
     };
 
