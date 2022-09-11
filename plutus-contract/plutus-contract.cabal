@@ -71,6 +71,7 @@ library
     Plutus.Contract.Trace.RequestHandler
     Plutus.Contract.Types
     Plutus.Contract.Util
+    Plutus.Contract.Wallet
     Plutus.Trace
     Plutus.Trace.Tag
     Plutus.Trace.Scheduler
