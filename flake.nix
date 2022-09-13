@@ -329,6 +329,8 @@
                 packages = {
                   cardano-crypto-praos.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf ] ];
                   cardano-crypto-class.components.library.pkgconfig = pkgs.lib.mkForce [ [ pkgs.libsodium-vrf ] ];
+                  moo.patches =
+                    [ ({ version, revision }: if version == "1.2" then ./patches/0001-removed-duplicate-package.patch else null) ];
                 };
               }
             )
