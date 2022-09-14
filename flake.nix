@@ -2,8 +2,9 @@
   description = "Plutus Contract API";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs-upstream.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     haskell-nix.url = "github:input-output-hk/haskell.nix";
+    nixpkgs.follows = "haskell-nix/nixpkgs-unstable";
     haskell-nix-extra-hackage = {
       url = "github:mlabs-haskell/haskell-nix-extra-hackage";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -138,6 +139,7 @@
   outputs =
     inputs@{ self
     , nixpkgs
+    , nixpkgs-upstream
     , haskell-nix
     , haskell-nix-extra-hackage
     , iohk-nix
@@ -145,14 +147,14 @@
     , ...
     }:
     let
-      plainNixpkgsFor = system: import nixpkgs { inherit system; };
+      plainNixpkgsFor = system: import nixpkgs-upstream { inherit system; };
       nixpkgsFor = system: import nixpkgs {
         inherit system;
         overlays = [ haskell-nix.overlay (import "${iohk-nix}/overlays/crypto") ];
       };
 
       supportedSystems = [ "x86_64-linux" "x86_64-darwin" ];
-      perSystem = nixpkgs.lib.genAttrs supportedSystems;
+      perSystem = nixpkgs-upstream.lib.genAttrs supportedSystems;
 
       fourmoluFor = system: (plainNixpkgsFor system).haskellPackages.fourmolu;
       hlintFor = system: (plainNixpkgsFor system).haskellPackages.hlint_3_4_1;
@@ -227,7 +229,6 @@
 
 
           "${inputs.cardano-crypto}"
-
 
           "${inputs.cardano-ledger}/eras/alonzo/impl"
           "${inputs.cardano-ledger}/eras/alonzo/test-suite"

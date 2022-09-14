@@ -714,13 +714,13 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
+    "nixpkgs-upstream": {
       "locked": {
-        "lastModified": 1662934689,
-        "narHash": "sha256-mXi8hmhiunOVTeHiuouWXb0vTqjzp9v9kshMmI561Us=",
+        "lastModified": 1663087123,
+        "narHash": "sha256-cNIRkF/J4mRxDtNYw+9/fBNq/NOA2nCuPOa3EdIyeDs=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "a0b7e70db7a55088d3de0cc370a59f9fbcc906c3",
+        "rev": "9608ace7009ce5bc3aeb940095e01553e635cbc7",
         "type": "github"
       },
       "original": {
@@ -840,7 +840,11 @@
         "io-sim": "io-sim",
         "iohk-monitoring-framework": "iohk-monitoring-framework",
         "iohk-nix": "iohk-nix",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": [
+          "haskell-nix",
+          "nixpkgs-unstable"
+        ],
+        "nixpkgs-upstream": "nixpkgs-upstream",
         "optparse-applicative": "optparse-applicative",
         "ouroboros-network": "ouroboros-network",
         "plutus": "plutus",
