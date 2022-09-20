@@ -72,11 +72,10 @@ import Ledger.Slot (Slot (..))
 import Plutus.ChainIndex (ChainIndexQueryEffect)
 import Plutus.Contract (Contract (..), WalletAPIError)
 import Plutus.Contract.Effects (PABReq, PABResp)
-import Plutus.Contract.Resumable (Request (..), Requests (..), Response (..))
+import Plutus.Contract.Resumable (Request (..), Response (..))
 import Plutus.Contract.Resumable qualified as State
 import Plutus.Contract.Schema (Input, Output)
 import Plutus.Contract.Types (ResumableResult (..), SuspendedContract (..))
-import Plutus.Contract.Types qualified as Contract.Types
 import Plutus.Trace.Scheduler (AgentSystemCall, ThreadId)
 import Prettyprinter (Pretty (..), braces, colon, fillSep, hang, parens, squotes, viaShow, vsep, (<+>))
 import Wallet.API qualified as WAPI

@@ -138,24 +138,19 @@ library
     , cryptonite            >=0.25
     , data-default
     , deepseq
-    , directory
-    , filepath
     , flat
     , foldl
     , freer-simple
     , hashable
     , hedgehog
-    , html-entities
     , IntervalMap
     , lens
     , memory
-    , mmorph
     , mtl
     , openapi3
     , pretty
     , prettyprinter         >=1.1.0.1
     , profunctors
-    , QuickCheck
     , row-types             >=1.0.1.0
     , semigroupoids
     , serialise
@@ -166,7 +161,6 @@ library
     , text
     , text-class
     , transformers
-    , uniplate
     , unordered-containers
     , uuid
 

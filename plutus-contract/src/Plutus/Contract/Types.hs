@@ -41,42 +41,42 @@ module Plutus.Contract.Types(
     , CheckpointError(..)
     -- * State
     , ResumableResult(..)
+    , responses
+    , logs
+    , checkpointStore
+                            , finalState
+                            , lastLogs
+                            , lastState
+                            , observableState
+                            , requests
     -- * Run with continuations
     , SuspendedContract(..)
+                            , checkpointKey
+                            , continuations
+                            , resumableResult
     ) where
 
-import Control.Lens (Bifunctor (bimap), Iso', iso, makeLenses, over, set, to, unto, view, (&), (.~), (^.))
+import Control.Lens (Bifunctor (bimap), Iso', iso, makeLenses)
 import Control.Monad.Except (MonadError (catchError, throwError))
-import Control.Monad.Freer (Eff, Member, interpret, reinterpret, run, send, subsume, type (~>))
+import Control.Monad.Freer (Eff)
 import Control.Monad.Freer.Error (Error)
 import Control.Monad.Freer.Error qualified as E
-import Control.Monad.Freer.Extras.Log (LogMessage, LogMsg, handleLogIgnore, handleLogWriter)
-import Control.Monad.Freer.Extras.Modify (raiseEnd, raiseUnder, writeIntoState)
-import Control.Monad.Freer.State (State, get, put, runState)
+import Control.Monad.Freer.Extras.Log (LogMessage, LogMsg)
+import Control.Monad.Freer.Extras.Modify (raiseUnder)
+import Control.Monad.Freer.State (State)
 import Control.Monad.Freer.Writer (Writer)
-import Control.Monad.Freer.Writer qualified as W
 import Data.Aeson (Value)
 import Data.Aeson qualified as Aeson
-import Data.Either (fromRight)
-import Data.Foldable (foldl')
 import Data.Functor.Apply (Apply, liftF2)
-import Data.IntervalSet qualified as IS
-import Data.Map qualified as Map
-import Data.Maybe (fromMaybe)
 import Data.Row (Row)
 import Data.Sequence (Seq)
 import GHC.Generics (Generic)
 
-import Plutus.Contract.Checkpoint (AsCheckpointError (_CheckpointError),
-                                   Checkpoint (AllocateKey, DoCheckpoint, Retrieve, Store),
-                                   CheckpointError (JSONDecodeError), CheckpointKey, CheckpointLogMsg, CheckpointStore,
-                                   completedIntervals, handleCheckpoint, jsonCheckpoint, jsonCheckpointLoop)
+import Plutus.Contract.Checkpoint (AsCheckpointError (_CheckpointError), Checkpoint, CheckpointError (JSONDecodeError),
+                                   CheckpointKey, CheckpointLogMsg, CheckpointStore)
 import Plutus.Contract.Effects (PABReq, PABResp)
 import Plutus.Contract.Error qualified
-import Plutus.Contract.Resumable (IterationID, MultiRequestContStatus (AContinuation, AResult),
-                                  MultiRequestContinuation (MultiRequestContinuation, ndcCont, ndcRequests), RequestID,
-                                  Requests, Response, Responses, Resumable, _Responses, handleResumable, insertResponse,
-                                  suspendNonDet)
+import Plutus.Contract.Resumable (MultiRequestContStatus, Requests, Responses, Resumable)
 import Plutus.Contract.Resumable qualified as Resumable
 
 import Prelude as Haskell
@@ -89,8 +89,6 @@ type ContractEffs w e =
     ,  Checkpoint
     ,  Resumable PABResp PABReq
     ]
-
-type ContractEnv = (IterationID, RequestID)
 
 newtype AccumState w = AccumState { unAccumState :: w }
   deriving stock (Eq, Ord, Show)

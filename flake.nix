@@ -159,7 +159,6 @@
       fourmoluFor = system: (plainNixpkgsFor system).haskellPackages.fourmolu;
       hlintFor = system: (plainNixpkgsFor system).haskellPackages.hlint_3_4_1;
 
-
       preCommitCheckFor = system:
         pre-commit-hooks.lib.${system}.run
           {
@@ -314,7 +313,6 @@
         allow-newer: *:aeson, *:hedgehog, size-based:template-haskell, *:hw-aeson
         constraints: aeson >= 2, hedgehog >= 1.1
       '';
-
 
 
       projectFor = system:

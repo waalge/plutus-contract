@@ -14,41 +14,16 @@ module Wallet.Emulator.Stream(
     EmulatorConfig(..)
     , EmulatorErr(..)
     , InitialChainState
+    , params
+    , initialChainState
     ) where
 
-import Control.Foldl qualified as L
-import Control.Lens (filtered, makeLenses, preview, view)
-import Control.Monad.Freer (Eff, Member, interpret, reinterpret, run, subsume, type (~>))
-import Control.Monad.Freer.Coroutine (Yield, yield)
-import Control.Monad.Freer.Error (Error, runError)
-import Control.Monad.Freer.Extras (raiseEnd, wrapError)
-import Control.Monad.Freer.Extras.Log (LogLevel, LogMessage (LogMessage, _logLevel), LogMsg (LMessage),
-                                       logMessageContent, mapMLog)
-import Control.Monad.Freer.Extras.Stream (runStream)
-import Control.Monad.Freer.State (State, gets, runState)
-import Data.Bifunctor (first)
+import Control.Lens (makeLenses)
 import Data.Default (Default (def))
-import Data.Map (Map)
-import Data.Map qualified as Map
-import Data.Maybe (fromMaybe)
-import Data.Set qualified as Set
-import Ledger.AddressMap qualified as AM
-import Ledger.Blockchain (Block, OnChainTx (Valid))
-import Ledger.Slot (Slot)
 import Ledger.Tx (CardanoTx (..))
-import Ledger.Value (Value)
 import Plutus.ChainIndex (ChainIndexError)
-import Streaming (Stream)
-import Streaming qualified as S
-import Streaming.Prelude (Of)
-import Streaming.Prelude qualified as S
 import Wallet.API (WalletAPIError)
-import Wallet.Emulator (EmulatorEvent, EmulatorEvent')
 import Wallet.Emulator qualified as EM
-import Wallet.Emulator.Chain (ChainControlEffect, ChainEffect, _SlotAdd)
-import Wallet.Emulator.MultiAgent (EmulatorState, EmulatorTimeEvent (EmulatorTimeEvent), MultiAgentControlEffect,
-                                   MultiAgentEffect, chainEvent, eteEvent)
-import Wallet.Emulator.Wallet (Wallet, mockWalletAddress)
 
 import Ledger.Params (Params)
 import Plutus.Contract.Trace (InitialDistribution, defaultDist)

@@ -19,6 +19,7 @@ module Wallet.Emulator.Folds (
     , describeError
     -- * Folds for contract instances
     , Outcome(..)
+    , fromResumableResult
     , instanceLog
     -- * Folds for transactions and the UTXO set
     , chainEvents
@@ -50,12 +51,9 @@ import Control.Foldl (Fold (Fold), FoldM (FoldM))
 import Control.Foldl qualified as L
 import Control.Lens hiding (Empty, Fold)
 import Control.Monad ((>=>))
-import Control.Monad.Freer (Eff, Member)
-import Control.Monad.Freer.Error (Error, throwError)
+import Control.Monad.Freer (Eff)
 import Data.Aeson qualified as JSON
-import Data.Foldable (toList)
 import Data.Map qualified as Map
-import Data.Maybe (fromMaybe, mapMaybe)
 import Data.Set qualified as Set
 import Data.Text (Text)
 import Ledger (Block, OnChainTx (Invalid, Valid), TxId)
@@ -66,14 +64,11 @@ import Ledger.Constraints.OffChain (UnbalancedTx)
 import Ledger.Index (ScriptValidationEvent, ValidationError, ValidationPhase (Phase1, Phase2))
 import Ledger.Tx (CardanoTx, TxOut (txOutValue), getCardanoTxFee)
 import Ledger.Value (Value)
-import Plutus.Contract (Contract)
-import Plutus.Contract.Effects (PABReq, PABResp, _BalanceTxReq)
 import Plutus.Contract.Request (MkTxLog)
-import Plutus.Contract.Resumable (Request, Response)
-import Plutus.Contract.Resumable qualified as State
-import Plutus.Contract.Types (ResumableResult (_finalState, _observableState, _requests))
+import Plutus.Contract.Resumable (Response)
+import Plutus.Contract.Types (ResumableResult (_finalState))
 import Plutus.Trace.Emulator.Types (ContractInstanceLog, ContractInstanceMsg (ContractLog), ContractInstanceTag,
-                                    UserThreadMsg, _HandledRequest, cilMessage, cilTag, toInstanceState)
+                                    UserThreadMsg, cilMessage, cilTag)
 import Plutus.V1.Ledger.Address (Address)
 import Prettyprinter (Pretty (..), defaultLayoutOptions, layoutPretty, vsep)
 import Prettyprinter.Render.Text (renderStrict)

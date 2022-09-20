@@ -64,18 +64,12 @@ module Wallet.Emulator.Types(
     ) where
 
 import Cardano.Crypto.Wallet qualified as Crypto
-import Control.Lens hiding (index)
-
-import Plutus.ChainIndex (ChainIndexError)
-import Wallet.API (WalletAPIError)
 
 import Ledger.CardanoWallet qualified
 import Plutus.Contract.Error (AssertionError)
 import Plutus.Contract.Error qualified
-import Wallet.Emulator.Chain (ChainControlEffect, ChainEffect, ChainEvent, ChainState)
 import Wallet.Emulator.Chain qualified
-import Wallet.Emulator.MultiAgent (EmulatorEvent', EmulatorState, MultiAgentControlEffect, MultiAgentEffect, chainEvent,
-                                   chainState, handleMultiAgent, handleMultiAgentControl)
+import Wallet.Emulator.MultiAgent (EmulatorEvent', EmulatorState, chainState)
 import Wallet.Emulator.MultiAgent qualified
 import Wallet.Emulator.NodeClient qualified
 import Wallet.Emulator.Wallet qualified
