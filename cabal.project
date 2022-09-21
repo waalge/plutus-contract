@@ -6,6 +6,7 @@ packages: plutus-contract
           plutus-ledger-constraints
           plutus-script-utils
           plutus-chain-index-core 
+          rewindable-index
 
 -- We never, ever, want this.
 write-ghc-environment-files: never
