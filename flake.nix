@@ -284,6 +284,7 @@
           "${inputs.iohk-monitoring-framework}/plugins/backend-trace-forwarder"
 
           "${inputs.cardano-node}/cardano-api"
+          "${inputs.cardano-node}/cardano-api"
           "${inputs.cardano-node}/cardano-cli"
           "${inputs.cardano-node}/cardano-git-rev"
           "${inputs.cardano-node}/cardano-node"
