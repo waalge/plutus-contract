@@ -4,6 +4,7 @@ index-state: 2022-05-18T00:00:00Z
 packages: plutus-contract
           plutus-ledger
           plutus-ledger-constraints
+          plutus-tx-constraints
           plutus-script-utils
           plutus-chain-index-core 
           rewindable-index

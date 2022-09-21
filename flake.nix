@@ -123,6 +123,10 @@
         "github:Quid2/flat/ee59880f47ab835dbd73bea0847dab7869fc20d8";
       flake = false;
     };
+    quickcheck-dynamic = {
+      url = "github:input-output-hk/quickcheck-dynamic";
+      flake = false;
+    };
 
     cardano-wallet = {
       url = "github:input-output-hk/cardano-wallet/18a931648550246695c790578d4a55ee2f10463e";
@@ -131,10 +135,6 @@
 
     freer-extras = {
       url = "github:mlabs-haskell/freer-extras";
-      flake = false;
-    };
-    quickcheck-dynamic = {
-      url = "github:input-output-hk/quickcheck-dynamic/c272906361471d684440f76c297e29ab760f6a1e";
       flake = false;
     };
   };
