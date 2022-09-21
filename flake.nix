@@ -88,7 +88,7 @@
 
     cardano-node = {
       url =
-        "github:input-output-hk/cardano-node/ea6d78c775d0f70dde979b52de022db749a2cc32";
+        "github:input-output-hk/cardano-node/1.35.3";
       flake = false;
     };
 
@@ -124,6 +124,7 @@
         "github:Quid2/flat/ee59880f47ab835dbd73bea0847dab7869fc20d8";
       flake = false;
     };
+
     quickcheck-dynamic = {
       url = "github:input-output-hk/quickcheck-dynamic";
       flake = false;

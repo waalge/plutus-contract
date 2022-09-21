@@ -25,11 +25,17 @@ test-show-details: streaming
 --
 -- So, any package using 'PlutusTx.compile' in the code for which you need to
 -- generate haddock documentation should use the following 'haddock-options'.
+package plutus-contract
+  haddock-options: "--optghc=-fplugin-opt PlutusTx.Plugin:defer-errors"
 package plutus-ledger
+  haddock-options: "--optghc=-fplugin-opt PlutusTx.Plugin:defer-errors"
+package plutus-ledger-constraints
+  haddock-options: "--optghc=-fplugin-opt PlutusTx.Plugin:defer-errors"
+package plutus-tx-constraints
   haddock-options: "--optghc=-fplugin-opt PlutusTx.Plugin:defer-errors"
 package plutus-script-utils
   haddock-options: "--optghc=-fplugin-opt PlutusTx.Plugin:defer-errors"
-package plutus-contract
+package plutus-chain-index-core
   haddock-options: "--optghc=-fplugin-opt PlutusTx.Plugin:defer-errors"
 
 -- These packages appear in our dependency tree and are very slow to build.
