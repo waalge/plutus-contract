@@ -42,6 +42,7 @@
       url = "github:input-output-hk/cardano-addresses/b7273a5d3c21f1a003595ebf1e1f79c28cd72513";
       flake = false;
     };
+
     hw-aeson = {
       url = "github:sevanspowell/hw-aeson/b5ef03a7d7443fcd6217ed88c335f0c411a05408";
       flake = false;
@@ -162,6 +163,7 @@
 
       fourmoluFor = system: (plainNixpkgsFor system).haskellPackages.fourmolu;
       hlintFor = system: (plainNixpkgsFor system).haskellPackages.hlint_3_4_1;
+
 
       preCommitCheckFor = system:
         pre-commit-hooks.lib.${system}.run
@@ -307,8 +309,6 @@
           "${inputs.freer-extras}"
 
           "${inputs.flat}"
-
-          "${inputs.freer-extras}"
 
           "${inputs.hw-aeson}"
           "${inputs.quickcheck-dynamic}/quickcheck-dynamic"
