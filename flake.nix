@@ -354,7 +354,7 @@
           shell = {
             inherit (preCommitCheckFor system) shellHook;
             withHoogle = true;
-            exactDeps = true;
+            exactDeps = false;
 
             nativeBuildInputs = [
               plainPkgs.cabal-install
