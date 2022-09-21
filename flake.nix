@@ -133,6 +133,10 @@
       url = "github:mlabs-haskell/freer-extras";
       flake = false;
     };
+    quickcheck-dynamic = {
+      url = "github:input-output-hk/quickcheck-dynamic/c272906361471d684440f76c297e29ab760f6a1e";
+      flake = false;
+    };
   };
 
 
@@ -307,6 +311,8 @@
           "${inputs.freer-extras}"
 
           "${inputs.hw-aeson}"
+          "${inputs.quickcheck-dynamic}/quickcheck-dynamic"
+          "${inputs.quickcheck-dynamic}/quickcheck-dynamic-iosim"
         ];
 
       cabalProjectLocal = ''
