@@ -1,4 +1,3 @@
---NOTE: can stay
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE DeriveAnyClass    #-}
 {-# LANGUAGE DeriveGeneric     #-}
@@ -40,7 +39,6 @@ data WalletEffect r where
     WalletAddSignature :: CardanoTx -> WalletEffect CardanoTx
     -- | Sends an unbalanced tx to be balanced, signed and submitted.
     YieldUnbalancedTx :: UnbalancedTx -> WalletEffect ()
--- TODO: does the template haskell have to go?
 makeEffect ''WalletEffect
 
 data NodeClientEffect r where

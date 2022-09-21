@@ -1,7 +1,7 @@
-{-# LANGUAGE DeriveAnyClass     #-}
-{-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE FlexibleInstances  #-}
-{-# LANGUAGE OverloadedStrings  #-}
+{-# LANGUAGE DeriveAnyClass    #-}
+{-# LANGUAGE DerivingVia       #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -29,9 +29,9 @@ import Data.Typeable (Proxy (Proxy), Typeable)
 import GHC.Generics (Generic)
 import Ledger.Ada (Ada (Lovelace))
 import Ledger.Crypto (PrivateKey (PrivateKey, getPrivateKey), PubKey (PubKey), Signature (Signature))
+import Ledger.Scripts (Language, Versioned)
 import Ledger.Slot (Slot (Slot))
-import Ledger.Tx.Internal (Language, Tx, TxIn, TxInType)
-import Plutus.V1.Ledger.Api (Address, Credential, CurrencySymbol (CurrencySymbol), Extended, Interval,
+import Plutus.V1.Ledger.Api (Address, Credential, CurrencySymbol (CurrencySymbol), DCert, Extended, Interval,
                              LedgerBytes (LedgerBytes), LowerBound, MintingPolicy (MintingPolicy),
                              MintingPolicyHash (MintingPolicyHash), POSIXTime (POSIXTime), PubKeyHash (PubKeyHash),
                              Redeemer (Redeemer), RedeemerHash (RedeemerHash), Script, StakeValidator (StakeValidator),
@@ -91,7 +91,6 @@ instance OpenApi.ToSchema C.AssetName where
         pure $ OpenApi.NamedSchema (Just "AssetName") OpenApi.byteSchema
 deriving instance Generic C.Quantity
 deriving anyclass instance OpenApi.ToSchema C.Quantity
-
 deriving anyclass instance (OpenApi.ToSchema k, OpenApi.ToSchema v) => OpenApi.ToSchema (AssocMap.Map k v)
 instance OpenApi.ToSchema Crypto.XPub where
     declareNamedSchema _ = pure $ OpenApi.NamedSchema (Just "PubKey") mempty
@@ -109,15 +108,12 @@ instance OpenApi.ToSchema JSON.Value where
     declareNamedSchema _ = pure $ OpenApi.NamedSchema (Just "JSON") mempty
 deriving instance OpenApi.ToSchema ann => OpenApi.ToSchema (Kind ann)
 deriving newtype instance OpenApi.ToSchema Ada
-deriving instance OpenApi.ToSchema Tx
+deriving instance OpenApi.ToSchema DCert
 deriving instance OpenApi.ToSchema ScriptTag
 deriving instance OpenApi.ToSchema RedeemerPtr
 deriving instance OpenApi.ToSchema TxOutRef
-deriving instance OpenApi.ToSchema TxInType
-deriving instance OpenApi.ToSchema TxIn
 deriving instance OpenApi.ToSchema PV1.TxOut
 deriving instance OpenApi.ToSchema PV2.TxOut
-deriving instance OpenApi.ToSchema Language
 deriving newtype instance OpenApi.ToSchema Validator
 deriving newtype instance OpenApi.ToSchema TxId
 deriving newtype instance OpenApi.ToSchema Slot
@@ -160,6 +156,8 @@ instance OpenApi.ToSchema Script where
     declareNamedSchema _ =
         pure $ OpenApi.NamedSchema (Just "Script") (OpenApi.toSchema (Proxy :: Proxy String))
 deriving newtype instance OpenApi.ToSchema ScriptHash
+deriving instance OpenApi.ToSchema Language
+deriving instance OpenApi.ToSchema script => OpenApi.ToSchema (Versioned script)
 
 -- 'POSIXTime' instances
 

@@ -1,4 +1,3 @@
--- FIXME: probably don't need this, as it seems
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE DeriveAnyClass        #-}
 {-# LANGUAGE DeriveDataTypeable    #-}
@@ -17,6 +16,7 @@
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE ViewPatterns          #-}
 
 {-# OPTIONS_GHC -Wno-orphans  #-}
 
@@ -58,10 +58,10 @@ import Ledger.Constraints.OffChain qualified as U
 import Ledger.Credential (Credential (PubKeyCredential, ScriptCredential))
 import Ledger.Fee (estimateTransactionFee, makeAutoBalancedTransaction)
 import Ledger.Index (UtxoIndex (UtxoIndex, getIndex))
-import Ledger.Params (Params (Params, pProtocolParams, pSlotConfig))
-import Ledger.Tx (CardanoTx, ChainIndexTxOut, SomeCardanoApiTx, Tx (txFee, txMint), TxIn, TxOut (TxOut))
+import Ledger.Params (Params (Params, pNetworkId, pProtocolParams, pSlotConfig))
+import Ledger.Tx (CardanoTx, ChainIndexTxOut, SomeCardanoApiTx, Tx (txFee, txMint), TxOut (TxOut))
 import Ledger.Tx qualified as Tx
-import Ledger.Tx.CardanoAPI (makeTransactionBody)
+import Ledger.Tx.CardanoAPI (makeTransactionBody, toCardanoTxOut, toCardanoTxOutDatumHash)
 import Ledger.Validation (addSignature, fromPlutusIndex, fromPlutusTx, getRequiredSigners)
 import Ledger.Value qualified as Value
 import Plutus.ChainIndex (PageQuery)
@@ -71,6 +71,7 @@ import Plutus.ChainIndex.Emulator (ChainIndexEmulatorState, ChainIndexQueryEffec
 import Plutus.Contract.Checkpoint (CheckpointLogMsg)
 import Plutus.Contract.Wallet (finalize)
 import Plutus.V1.Ledger.Api (PubKeyHash, TxOutRef, ValidatorHash, Value)
+import Plutus.V1.Ledger.Tx qualified as V1
 import PlutusTx.Prelude qualified as PlutusTx
 import Prettyprinter (Pretty (pretty))
 import Servant.API (FromHttpApiData (parseUrlPiece), ToHttpApiData (toUrlPiece))
@@ -318,11 +319,13 @@ handleBalance ::
     -> Eff effs CardanoTx
 handleBalance utx' = do
     utxo <- get >>= ownOutputs
-    params@Params { pSlotConfig } <- WAPI.getClientParams
+    params@Params { pSlotConfig, pNetworkId } <- WAPI.getClientParams
     let utx = finalize pSlotConfig utx'
         requiredSigners = Set.toList (U.unBalancedTxRequiredSignatories utx)
-        eitherTx = view U.cardanoTx utx
-    cUtxoIndex <- handleError eitherTx $ fromPlutusIndex params $ UtxoIndex $ U.unBalancedTxUtxoIndex utx <> fmap Tx.toTxOut utxo
+        eitherTx = U.unBalancedTxTx utx
+        plUtxo = traverse (toCardanoTxOut pNetworkId toCardanoTxOutDatumHash . Tx.toTxOut) utxo
+    mappedUtxo <- either (throwError . WAPI.ToCardanoError) (pure . fmap TxOut) plUtxo
+    cUtxoIndex <- handleError eitherTx $ fromPlutusIndex $ UtxoIndex $ U.unBalancedTxUtxoIndex utx <> mappedUtxo
     case eitherTx of
         Right _ -> do
             -- Find the fixed point of fee calculation, trying maximally n times to prevent an infinite loop
@@ -349,8 +352,8 @@ handleBalance utx' = do
             tx' <- either (throwError . WAPI.ToCardanoError)
                            pure
                  $ either (fmap (Tx.CardanoApiTx . Tx.CardanoApiEmulatorEraTx . makeSignedTransaction []) . makeTransactionBody mempty)
-                            (pure . Tx.EmulatorTx)
-                 $ tx
+                          (pure . Tx.EmulatorTx)
+                          tx
             let sves = case ve of
                     Ledger.ScriptFailure f -> [Ledger.ScriptValidationResultOnlyEvent (Left f)]
                     _                      -> []
@@ -413,10 +416,10 @@ lookupValue ::
     ( Member (Error WAPI.WalletAPIError) effs
     , Member ChainIndexQueryEffect effs
     )
-    => Tx.TxIn
+    => Tx.TxInput
     -> Eff effs Value
-lookupValue outputRef@Tx.TxIn {Tx.txInRef} = do
-    txoutMaybe <- ChainIndex.unspentTxOutFromRef txInRef
+lookupValue outputRef@Tx.TxInput {Tx.txInputRef} = do
+    txoutMaybe <- ChainIndex.unspentTxOutFromRef txInputRef
     case txoutMaybe of
         Just txout -> pure $ view Ledger.ciTxOutValue txout
         Nothing ->
@@ -443,12 +446,12 @@ handleBalanceTx utxo utx = do
     collateral  <- traverse lookupValue (Tx.txCollateral filteredUnbalancedTxTx)
     let fees = txFee filteredUnbalancedTxTx
         left = txMint filteredUnbalancedTxTx <> fold inputValues
-        right = fees <> foldMap (view Tx.outValue) (filteredUnbalancedTxTx ^. Tx.outputs)
+        right = fees <> foldMap Tx.txOutValue (filteredUnbalancedTxTx ^. Tx.outputs)
         collFees = Ada.toValue $ (Ada.fromValue fees * maybe 100 fromIntegral (protocolParamCollateralPercent pProtocolParams)) `Ada.divide` 100
         remainingCollFees = collFees PlutusTx.- fold collateral
         balance = left PlutusTx.- right
         -- filter out inputs from utxo that are already in unBalancedTx
-        inputsOutRefs = map Tx.txInRef txInputs
+        inputsOutRefs = map Tx.txInputRef txInputs
         filteredUtxo = flip Map.filterWithKey utxo $ \txOutRef _ ->
             txOutRef `notElem` inputsOutRefs
         outRefsWithValue = second (view Ledger.ciTxOutValue) <$> Map.toList filteredUtxo
@@ -469,7 +472,7 @@ handleBalanceTx utxo utx = do
                 pure tx'
             else do
                 logDebug $ AddingInputsFor neg
-                pure $ tx' & over Tx.inputs (sort . (++) newTxIns)
+                pure $ tx' & over Tx.inputs (sort . (++) (fmap Tx.pubKeyTxInput newTxIns))
 
     if remainingCollFees `Value.leq` PlutusTx.zero
     then do
@@ -479,6 +482,8 @@ handleBalanceTx utxo utx = do
         logDebug $ AddingCollateralInputsFor remainingCollFees
         addCollateral utxo remainingCollFees tx''
 
+type PubKeyTxIn = TxOutRef
+
 calculateTxChanges
     :: ( Member (Error WAPI.WalletAPIError) effs
        )
@@ -486,16 +491,19 @@ calculateTxChanges
     -> Address -- ^ The address for the change output
     -> [(TxOutRef, Value)] -- ^ The current wallet's unspent transaction outputs.
     -> (Value, Value) -- ^ The unbalanced tx's negative and positive balance.
-    -> Eff effs ((Value, [TxIn]), (Value, [TxOut]))
+    -> Eff effs ((Value, [PubKeyTxIn]), (Value, [TxOut]))
 calculateTxChanges params addr utxos (neg, pos) = do
-
     -- Calculate the change output with minimal ada
     (newNeg, newPos, extraTxOuts) <- if Value.isZero pos
         then pure (neg, pos, [])
         else do
+            txOut <- either
+              (throwError . WAPI.ToCardanoError)
+              (pure . TxOut)
+              $ toCardanoTxOut (pNetworkId params) toCardanoTxOutDatumHash $ V1.TxOut addr pos Nothing
             (missing, extraTxOut) <-
                 either (throwError . WAPI.ToCardanoError) pure
-                $ U.adjustTxOut params (TxOut addr pos Nothing)
+                $ U.adjustTxOut params txOut
             let missingValue = Ada.toValue (fold missing)
             -- Add the missing ada to both sides to keep the balance.
             pure (neg <> missingValue, pos <> missingValue, [extraTxOut])
@@ -508,7 +516,7 @@ calculateTxChanges params addr utxos (neg, pos) = do
     if Value.isZero change
         then do
             -- No change, so the new inputs and outputs have balanced the transaction
-            pure ((newNeg, Tx.pubKeyTxIn . fst <$> spend), (newPos, extraTxOuts))
+            pure ((newNeg, fst <$> spend), (newPos, extraTxOuts))
         else if null extraTxOuts
             -- We have change so we need an extra output, if we didn't have that yet,
             -- first make one with an estimated minimal amount of ada
@@ -529,7 +537,7 @@ addCollateral
 addCollateral mp vl tx = do
     (spend, _) <- selectCoin (filter (Value.isAdaOnlyValue . snd) (second (view Ledger.ciTxOutValue) <$> Map.toList mp)) vl
     let addTxCollateral =
-            let ins = Tx.pubKeyTxIn . fst <$> spend
+            let ins = Tx.pubKeyTxInput . fst <$> spend
             in over Tx.collateralInputs (sort . (++) ins)
     pure $ tx & addTxCollateral
 
@@ -590,8 +598,8 @@ selectCoinSingle cur tok fnds' vl =
 -- | Removes transaction outputs with empty datum and empty value.
 removeEmptyOutputs :: Tx -> Tx
 removeEmptyOutputs tx = tx & over Tx.outputs (filter (not . isEmpty')) where
-    isEmpty' Tx.TxOut{Tx.txOutValue, Tx.txOutDatumHash} =
-        null (Value.flattenValue txOutValue) && isNothing txOutDatumHash
+    isEmpty' txOut =
+        null (Value.flattenValue (Tx.txOutValue txOut)) && isNothing (Tx.txOutDatumHash txOut)
 
 -- | Take elements from a list until the predicate is satisfied.
 -- 'takeUntil' @p@ includes the first element for wich @p@ is true

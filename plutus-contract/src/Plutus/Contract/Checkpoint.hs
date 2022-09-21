@@ -1,4 +1,3 @@
---TODO: this should eventually be extracted to something like Freer Extra as it has nothing to do with Plutus
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE DeriveAnyClass      #-}

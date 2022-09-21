@@ -167,4 +167,3 @@ signTxAndSubmit_ = void . signTxAndSubmit
 -- | The default slot validity range for transactions.
 defaultSlotRange :: SlotRange
 defaultSlotRange = always
-

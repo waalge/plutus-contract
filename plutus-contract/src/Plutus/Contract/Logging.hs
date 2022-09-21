@@ -26,4 +26,3 @@ logWarn = Contract . L.logWarn . toJSON
 -- | Log a message at the 'Error' level
 logError :: ToJSON a => a -> Contract w s e ()
 logError = Contract . L.logError . toJSON
-

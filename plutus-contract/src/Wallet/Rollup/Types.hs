@@ -1,4 +1,3 @@
--- TODO? do we need the types? - YEET
 {-# LANGUAGE DeriveAnyClass             #-}
 {-# LANGUAGE DeriveFunctor              #-}
 {-# LANGUAGE DeriveGeneric              #-}
@@ -15,9 +14,9 @@ import Data.Aeson (FromJSON, FromJSONKey, ToJSON, ToJSONKey)
 import Data.Map (Map)
 import Data.OpenApi.Schema qualified as OpenApi
 import GHC.Generics
-import Ledger (PaymentPubKeyHash (PaymentPubKeyHash), Tx, TxIn)
-import Plutus.V1.Ledger.Api (Address (Address, addressCredential), Credential (PubKeyCredential, ScriptCredential),
-                             TxId, TxOut (TxOut, txOutAddress), ValidatorHash, Value)
+import Ledger (PaymentPubKeyHash (PaymentPubKeyHash), Tx, TxIn, TxOut, txOutAddress)
+import Plutus.V1.Ledger.Api (Address (addressCredential), Credential (PubKeyCredential, ScriptCredential), TxId,
+                             ValidatorHash, Value)
 import Prettyprinter (Pretty, pretty, viaShow)
 
 data TxKey =
@@ -65,8 +64,8 @@ data BeneficialOwner
     deriving anyclass (FromJSON, ToJSON, OpenApi.ToSchema, FromJSONKey, ToJSONKey)
 
 toBeneficialOwner :: TxOut -> BeneficialOwner
-toBeneficialOwner TxOut {txOutAddress=Address{addressCredential}} =
-    case addressCredential of
+toBeneficialOwner txOut =
+    case addressCredential (txOutAddress txOut) of
         PubKeyCredential pkh -> OwnedByPaymentPubKey (PaymentPubKeyHash pkh)
         ScriptCredential vh  -> OwnedByScript vh
 

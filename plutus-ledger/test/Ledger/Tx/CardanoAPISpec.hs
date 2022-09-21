@@ -11,7 +11,7 @@ import Cardano.Api (AsType (AsPaymentKey, AsStakeKey), Key (verificationKeyHash)
 import Cardano.Api.Shelley (StakeCredential (StakeCredentialByKey), TxBody (ShelleyTxBody))
 import Gen.Cardano.Api.Typed qualified as Gen
 import Ledger.Test (someValidator)
-import Ledger.Tx (RedeemerPtr (RedeemerPtr), ScriptTag (Mint), Tx (txMint, txMintScripts, txRedeemers))
+import Ledger.Tx (Language (PlutusV1), Tx (txMint), Versioned (Versioned), addMintingPolicy)
 import Ledger.Tx.CardanoAPI (fromCardanoAddressInEra, makeTransactionBody, toCardanoAddressInEra,
                              toCardanoTxBodyContent)
 import Ledger.Value qualified as Value
@@ -20,7 +20,7 @@ import Plutus.Script.Utils.V1.Typed.Scripts.MonetaryPolicies qualified as MPS
 import Plutus.V1.Ledger.Scripts (unitRedeemer)
 
 import Data.Default (def)
-import Data.Map qualified as Map
+import Data.Function ((&))
 import Hedgehog (Gen, Property, forAll, property, (===))
 import Hedgehog qualified
 import Hedgehog.Gen qualified as Gen
@@ -42,12 +42,10 @@ addressRoundTripSpec = property $ do
     shelleyAddr <- shelleyAddressInEra
                <$> forAll (makeShelleyAddress networkId <$> genPaymentCredential
                                                         <*> genStakeAddressReference)
-    case fromCardanoAddressInEra shelleyAddr of
-        Left _ -> Hedgehog.assert False
-        Right plutusAddr ->
-            case toCardanoAddressInEra networkId plutusAddr of
-                Left _      -> Hedgehog.assert False
-                Right cAddr -> cAddr === shelleyAddr
+    let plutusAddr = fromCardanoAddressInEra shelleyAddr
+    case toCardanoAddressInEra networkId plutusAddr of
+        Left _      -> Hedgehog.assert False
+        Right cAddr -> cAddr === shelleyAddr
 
 -- Copied from Gen.Cardano.Api.Typed, because it's not exported.
 genPaymentCredential :: Gen PaymentCredential
@@ -87,11 +85,8 @@ convertMintingTx = property $ do
       mps  = MPS.mkForwardingMintingPolicy vHash
       mpsHash = PV1.mintingPolicyHash mps
       vL n = Value.singleton (Value.mpsSymbol mpsHash) "L" n
-      tx   = mempty
-        { txMint = vL 1
-        , txMintScripts = Map.singleton mpsHash mps
-        , txRedeemers = Map.singleton (RedeemerPtr Mint 0) unitRedeemer
-        }
+      tx   = mempty { txMint = vL 1 }
+          & addMintingPolicy (Versioned mps PlutusV1) unitRedeemer
       ectx = toCardanoTxBodyContent def [] tx >>= makeTransactionBody mempty
   case ectx of
     -- Check that the converted tx contains exactly one script

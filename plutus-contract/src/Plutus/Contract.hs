@@ -1,4 +1,3 @@
---FIXME add back API that I did delete
 {-# LANGUAGE ConstraintKinds    #-}
 {-# LANGUAGE ExplicitNamespaces #-}
 {-# LANGUAGE FlexibleContexts   #-}
@@ -96,6 +95,8 @@ module Plutus.Contract(
     -- ** Tx output confirmation
     , Request.awaitTxOutStatusChange
     -- * Checkpoints
+    , Plutus.Contract.Types.checkpoint
+    , Plutus.Contract.Types.checkpointLoop
     , Plutus.Contract.Types.AsCheckpointError(..)
     , Plutus.Contract.Types.CheckpointError(..)
     -- * Logging

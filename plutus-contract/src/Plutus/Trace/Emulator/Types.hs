@@ -30,6 +30,8 @@ module Plutus.Trace.Emulator.Types(
     -- * Instance state
     , ContractInstanceState(..)
     , ContractInstanceStateInternal(..)
+    , emptyInstanceState
+    , addEventInstanceState
     , toInstanceState
     -- * Logging
     , ContractInstanceLog(..)
@@ -72,10 +74,11 @@ import Ledger.Slot (Slot (..))
 import Plutus.ChainIndex (ChainIndexQueryEffect)
 import Plutus.Contract (Contract (..), WalletAPIError)
 import Plutus.Contract.Effects (PABReq, PABResp)
-import Plutus.Contract.Resumable (Request (..), Response (..))
+import Plutus.Contract.Resumable (Request (..), Requests (..), Response (..))
 import Plutus.Contract.Resumable qualified as State
 import Plutus.Contract.Schema (Input, Output)
 import Plutus.Contract.Types (ResumableResult (..), SuspendedContract (..))
+import Plutus.Contract.Types qualified as Contract.Types
 import Plutus.Trace.Scheduler (AgentSystemCall, ThreadId)
 import Prettyprinter (Pretty (..), braces, colon, fillSep, hang, parens, squotes, viaShow, vsep, (<+>))
 import Wallet.API qualified as WAPI
@@ -294,6 +297,33 @@ data ContractInstanceState w (s :: Row *) e a =
 deriving anyclass instance  (JSON.ToJSON e, JSON.ToJSON a, JSON.ToJSON w) => JSON.ToJSON (ContractInstanceState w s e a)
 deriving anyclass instance  (JSON.FromJSON e, JSON.FromJSON a, JSON.FromJSON w) => JSON.FromJSON (ContractInstanceState w s e a)
 
+emptyInstanceState ::
+    forall w (s :: Row *) e a.
+    Monoid w
+    => Contract w s e a
+    -> ContractInstanceStateInternal w s e a
+emptyInstanceState (Contract c) =
+    ContractInstanceStateInternal
+        { cisiSuspState = Contract.Types.suspend mempty c
+        , cisiEvents = mempty
+        , cisiHandlersHistory = mempty
+        }
+
+addEventInstanceState :: forall w s e a.
+    Monoid w
+    => Response PABResp
+    -> ContractInstanceStateInternal w s e a
+    -> Maybe (ContractInstanceStateInternal w s e a)
+addEventInstanceState event ContractInstanceStateInternal{cisiSuspState, cisiEvents, cisiHandlersHistory} =
+    case Contract.Types.runStep cisiSuspState event of
+        Nothing -> Nothing
+        Just newState ->
+            let SuspendedContract{_resumableResult=ResumableResult{_requests=Requests rq}} = cisiSuspState in
+            Just ContractInstanceStateInternal
+                { cisiSuspState = newState
+                , cisiEvents = cisiEvents |> event
+                , cisiHandlersHistory = cisiHandlersHistory |> rq
+                }
 
 makeLenses ''ContractInstanceLog
 makePrisms ''ContractInstanceMsg

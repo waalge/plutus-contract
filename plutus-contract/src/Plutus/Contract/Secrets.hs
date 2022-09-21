@@ -14,7 +14,8 @@ import Control.Monad
 import Data.Aeson as Aeson (FromJSON (..), ToJSON (..), Value (..))
 import Data.Aeson.Encoding.Internal (string)
 import Data.String
-import PlutusTx.Builtins qualified as PlutusTx
+import PlutusTx.Prelude as PlutusTx
+import Prelude qualified as Haskell
 
 -- | A secret value. A value of type `Secret a` can't leak onto
 -- the blockchain in plain-text unless you use an unsafe function.
@@ -27,7 +28,7 @@ newtype Secret a = MkSecret a
    because of type abstraction. Intuitively, the `PlutusTx.Extensions.Secrets` module
    does not export the `MkSecret` constructor so as long as the client code that
    imports `PlutusTx.Extensions.Secrets` does not use some unholy `unsafePerformIO` to
-   break the Haskell sktype system the code is guaranteed not to depend on the actual
+   break the Haskell type system the code is guaranteed not to depend on the actual
    value of a secret without:
      1. Using a safe function like `escape_sha2_256` or
      2. Using an unsafe function like `unsafe_escape_secret` (which has a compiler warning
@@ -53,7 +54,7 @@ newtype Secret a = MkSecret a
 -- bypassed by safe code.
 data SecretArgument a = UserSide a
                       | EndpointSide (Secret a)
-                      deriving Show
+                      deriving Haskell.Show
 
 {- Note [Secret arguments]
    When we write endpoint code we would like to specify the argument type
@@ -88,16 +89,23 @@ instance ToJSON a => ToJSON (SecretArgument a) where
   toEncoding (EndpointSide _) = string "EndpointSide *****"
 
 instance FromJSON a => FromJSON (SecretArgument a) where
-  parseJSON = liftM (EndpointSide . mkSecret) . parseJSON
+  parseJSON = liftM (EndpointSide Haskell.. mkSecret) Haskell.. parseJSON
 
-instance Show (Secret a) where
+instance Haskell.Show (Secret a) where
   show (MkSecret _) = "*****"
 
-instance Functor Secret where
+instance Haskell.Functor Secret where
   fmap f (MkSecret a) = MkSecret (f a)
 
-instance Applicative Secret where
+instance PlutusTx.Functor Secret where
+  fmap f (MkSecret a) = MkSecret (f a)
+
+instance Haskell.Applicative Secret where
   pure = mkSecret
+  (MkSecret f) <*> (MkSecret a) = MkSecret (f a)
+
+instance PlutusTx.Applicative Secret where
+  pure = MkSecret
   (MkSecret f) <*> (MkSecret a) = MkSecret (f a)
 
 instance Monad Secret where
@@ -125,8 +133,8 @@ extractSecret (EndpointSide s) = s
 -- | Take the sha2_256 hash of a secret value. The result of this
 -- function can be used on the blockchain.
 {-# INLINABLE escape_sha2_256 #-}
-escape_sha2_256 :: Secret PlutusTx.BuiltinByteString -> PlutusTx.BuiltinByteString
-escape_sha2_256 = PlutusTx.sha2_256 . unsafe_escape_secret
+escape_sha2_256 :: Secret BuiltinByteString -> BuiltinByteString
+escape_sha2_256 = sha2_256 . unsafe_escape_secret
 
 {-# WARNING unsafe_escape_secret "[Requires Review] An escape hatch is being created. This should only be used in trusted code." #-}
 unsafe_escape_secret :: Secret a -> a

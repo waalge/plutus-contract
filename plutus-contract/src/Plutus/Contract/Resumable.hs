@@ -1,4 +1,3 @@
---FIXME; similarly to CheckPoint; move this out to freer-extra
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE DeriveAnyClass      #-}

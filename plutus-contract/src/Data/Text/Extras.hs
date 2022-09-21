@@ -1,4 +1,3 @@
---FIXME: move to different module
 {-# LANGUAGE OverloadedStrings #-}
 
 module Data.Text.Extras(

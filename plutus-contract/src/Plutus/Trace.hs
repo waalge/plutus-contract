@@ -40,10 +40,14 @@ that extract interesting data from emulator event streams.
 
 -}
 module Plutus.Trace(
-      Scheduler.SchedulerLog
+    module X
+    , module Extract
+    , Scheduler.SchedulerLog
     , Scheduler.ThreadEvent
     ) where
 
+import Plutus.Trace.Emulator as X
+import Plutus.Trace.Emulator.Extract as Extract
 import Plutus.Trace.Scheduler as Scheduler
 
 {- Note [Trace]

@@ -1,4 +1,3 @@
---TODO can stay
 module Wallet.Emulator(
     module Types
     ) where

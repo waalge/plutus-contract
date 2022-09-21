@@ -1,4 +1,3 @@
---FIXME: move to different module?
 module Data.UUID.Extras
     ( isValidVersion
     , mockUUIDs

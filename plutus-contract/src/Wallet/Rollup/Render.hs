@@ -1,4 +1,3 @@
---TODO: YEET
 {-# LANGUAGE DerivingVia           #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
@@ -34,13 +33,13 @@ import Data.Set (Set)
 import Data.Set qualified as Set
 import Data.Text (Text)
 import Data.Text qualified as Text
-import Ledger (Address, Blockchain, PaymentPubKey, PaymentPubKeyHash, Tx (Tx), TxId, TxIn (TxIn), TxInType (..),
-               TxOut (TxOut), TxOutRef (TxOutRef, txOutRefId, txOutRefIdx), Value, txFee, txMint, txOutValue, txOutputs,
-               txSignatures)
+import Ledger (Address, Blockchain, PaymentPubKey, PaymentPubKeyHash, Tx (Tx), TxId, TxIn (TxIn), TxInType (..), TxOut,
+               TxOutRef (TxOutRef, txOutRefId, txOutRefIdx), Value, txFee, txMint, txOutValue, txOutputs, txSignatures)
 import Ledger.Ada (Ada (Lovelace))
 import Ledger.Ada qualified as Ada
 import Ledger.Crypto (PubKey, PubKeyHash, Signature)
-import Ledger.Scripts (Datum (getDatum), Script, Validator, ValidatorHash (ValidatorHash), unValidatorScript)
+import Ledger.Scripts (Datum (getDatum), Script, Validator, ValidatorHash (ValidatorHash), unValidatorScript,
+                       unversioned)
 import Ledger.Value (CurrencySymbol (CurrencySymbol), TokenName (TokenName))
 import Ledger.Value qualified as Value
 import PlutusTx qualified
@@ -285,9 +284,9 @@ instance Render TxIn where
     render (TxIn txInRef Nothing) = render txInRef
 
 instance Render TxInType where
-    render (ConsumeScriptAddress _ validator _ _) = render validator
-    render ConsumePublicKeyAddress                = pure mempty
-    render ConsumeSimpleScriptAddress             = pure mempty
+    render (ConsumeScriptAddress validator _ _) = render (unversioned validator)
+    render ConsumePublicKeyAddress              = pure mempty
+    render ConsumeSimpleScriptAddress           = pure mempty
 
 instance Render TxOutRef where
     render TxOutRef {txOutRefId, txOutRefIdx} =
@@ -299,13 +298,13 @@ instance Render TxOutRef where
             pure $ fill 8 t <> r
 
 instance Render TxOut where
-    render txOut@TxOut {txOutValue} =
+    render txOut =
         vsep <$>
         sequence
             [ mappend "Destination:" . indent 2 <$>
               render (toBeneficialOwner txOut)
             , pure "Value:"
-            , indent 2 <$> render txOutValue
+            , indent 2 <$> render (txOutValue txOut)
             ]
 
 ------------------------------------------------------------

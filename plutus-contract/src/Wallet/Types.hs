@@ -1,4 +1,3 @@
--- TODO stays completely (minus the mockUUIDs for testing?)
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE DeriveAnyClass    #-}
 {-# LANGUAGE DerivingVia       #-}

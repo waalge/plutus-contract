@@ -31,6 +31,7 @@ type UntypedMintingPolicy = BuiltinData -> BuiltinData -> ()
 
 -- TODO: we should add a TypedMintingPolicy interface here
 
+{-# INLINABLE mkUntypedMintingPolicy #-}
 -- | Converts a custom redeemer from a minting policy function to an
 -- untyped minting policy function. See Note [Scripts returning Bool].
 --
@@ -53,7 +54,6 @@ type UntypedMintingPolicy = BuiltinData -> BuiltinData -> ()
 --    where
 --       wrap = mkUntypedMintingPolicy mkMintingPolicy
 -- @
-{-# INLINABLE mkUntypedMintingPolicy #-}
 mkUntypedMintingPolicy
     :: UnsafeFromData r
     => (r -> PV1.ScriptContext -> Bool)
@@ -62,7 +62,6 @@ mkUntypedMintingPolicy
 mkUntypedMintingPolicy f r p =
     check $ f (unsafeFromBuiltinData r) (unsafeFromBuiltinData p)
 
-{-# INLINABLE mkForwardingMintingPolicy #-}
 -- | A minting policy that checks whether the validator script was run
 --   in the minting transaction.
 mkForwardingMintingPolicy :: ValidatorHash -> MintingPolicy
