@@ -315,7 +315,7 @@
 
           "${inputs.hw-aeson}"
           
-          "${inputs.quickcheck-dynamic}/quickcheck-dynamic"
+          "${inputs.quickcheck-dynamic}"
         ];
 
       cabalProjectLocal = ''
