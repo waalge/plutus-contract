@@ -126,7 +126,7 @@
     };
 
     quickcheck-dynamic = {
-      url = "github:input-output-hk/quickcheck-dynamic";
+      url = "github:input-output-hk/quickcheck-dynamic/c272906361471d684440f76c297e29ab760f6a1e";
       flake = false;
     };
 
@@ -136,9 +136,10 @@
     };
 
     # freer-extras = {
-    #   url = "github:input-output-hk/freer-extras";
+    #   url = "github:mlabs-haskell/freer-extras";
     #   flake = false;
     # };
+
   };
 
 
@@ -313,8 +314,8 @@
           "${inputs.flat}"
 
           "${inputs.hw-aeson}"
+          
           "${inputs.quickcheck-dynamic}/quickcheck-dynamic"
-          "${inputs.quickcheck-dynamic}/quickcheck-dynamic-iosim"
         ];
 
       cabalProjectLocal = ''

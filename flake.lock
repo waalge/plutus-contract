@@ -316,22 +316,6 @@
         "type": "github"
       }
     },
-    "freer-extras": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1661444602,
-        "narHash": "sha256-Fkz0Sis71TC6HtjwwUELBy56y5oLnNtJiilJVtWuAMw=",
-        "owner": "mlabs-haskell",
-        "repo": "freer-extras",
-        "rev": "86211d5004dca8b7a4a04b14fbbe934f4711a50f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "mlabs-haskell",
-        "repo": "freer-extras",
-        "type": "github"
-      }
-    },
     "ghc-8.6.5-iohk": {
       "flake": false,
       "locked": {
@@ -819,16 +803,17 @@
     "quickcheck-dynamic": {
       "flake": false,
       "locked": {
-        "lastModified": 1662454862,
-        "narHash": "sha256-sMAO+Vkocf/ejwg2sx58rXlmoE6tTPQV/ECVVOnWPHo=",
+        "lastModified": 1656927450,
+        "narHash": "sha256-TioJQASNrQX6B3n2Cv43X2olyT67//CFQqcpvNW7N60=",
         "owner": "input-output-hk",
         "repo": "quickcheck-dynamic",
-        "rev": "81310df2de73094d5daff1b675a4318cff5fc8b5",
+        "rev": "c272906361471d684440f76c297e29ab760f6a1e",
         "type": "github"
       },
       "original": {
         "owner": "input-output-hk",
         "repo": "quickcheck-dynamic",
+        "rev": "c272906361471d684440f76c297e29ab760f6a1e",
         "type": "github"
       }
     },
@@ -845,7 +830,6 @@
         "ekg-forward": "ekg-forward",
         "ekg-json": "ekg-json",
         "flat": "flat",
-        "freer-extras": "freer-extras",
         "goblins": "goblins",
         "haskell-nix": "haskell-nix",
         "haskell-nix-extra-hackage": "haskell-nix-extra-hackage",
