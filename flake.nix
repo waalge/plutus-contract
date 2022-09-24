@@ -135,10 +135,10 @@
       flake = false;
     };
 
-    freer-extras = {
-      url = "github:mlabs-haskell/freer-extras";
-      flake = false;
-    };
+    # freer-extras = {
+    #   url = "github:input-output-hk/freer-extras";
+    #   flake = false;
+    # };
   };
 
 
@@ -308,7 +308,7 @@
 
           "${inputs.optparse-applicative}"
 
-          "${inputs.freer-extras}"
+          # "${inputs.freer-extras}"
 
           "${inputs.flat}"
 
@@ -364,7 +364,7 @@
               plainPkgs.nixpkgs-fmt
 
               (fourmoluFor system)
-              (hlintFor system)
+              # (hlintFor system)
               hls
             ];
           };
@@ -395,7 +395,7 @@
               pkgs.haskellPackages.apply-refact
               pkgs.haskellPackages.cabal-fmt
               pkgs.nixpkgs-fmt
-              (hlintFor system)
+              #(hlintFor system)
               (fourmoluFor system)
             ];
           };
