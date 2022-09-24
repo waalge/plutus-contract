@@ -85,6 +85,7 @@ library
   --------------------------
   build-depends:
     , cardano-api                  >=1.35
+    , cardano-api-gen              >=1.35
     , cardano-ledger-byron
     , io-classes
     , iohk-monitoring
