@@ -88,7 +88,7 @@
 
     cardano-node = {
       url =
-        "github:input-output-hk/cardano-node/1.35.3";
+        "github:waalge/cardano-node/split-cardano-api-gen";
       flake = false;
     };
 
@@ -283,7 +283,8 @@
           "${inputs.iohk-monitoring-framework}/plugins/backend-monitoring"
           "${inputs.iohk-monitoring-framework}/plugins/backend-trace-forwarder"
 
-          "${inputs.cardano-node}/cardano-api" # Not working 
+          "${inputs.cardano-node}/cardano-api"
+          "${inputs.cardano-node}/cardano-api-gen" 
           "${inputs.cardano-node}/cardano-cli"
           "${inputs.cardano-node}/cardano-git-rev"
           "${inputs.cardano-node}/cardano-node"
